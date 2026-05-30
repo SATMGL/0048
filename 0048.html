@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layout Halaman</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── GLOBAL: tidak ada teks yang boleh overflow keluar kontainernya ── */
+    button, select, input, label, span, p, h1, h2, h3, li, td, th {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    :root {
+      --clr-primary:  #1e3a8a;
+      --clr-primary2: #1e3a5f;
+      --clr-blue:     #2563eb;
+      --clr-green:    #16a34a;
+      --clr-red:      #dc2626;
+      --clr-bg:       #f1f5f9;
+      --clr-border:   #cbd5e1;
+
+      /* ukuran dasar — disesuaikan lewat media query */
+      --fs-base:    16px;
+      --fs-h1:      40px;
+      --h-header:   64px;
+      --h-menu:     56px;
+      --h-footer:   48px;
+      --h-ctrl:     44px;   /* tinggi dropdown / tombol kontrol */
+      --pad-page:   16px;
+      --gap-page:   12px;
+      --radius:     8px;
+    }
+
+    /* MOBILE (<= 600px) */
+    @media (max-width: 600px) {
+      :root {
+        --fs-base:  13px;
+        --fs-h1:    28px;
+        --h-header: 52px;
+        --h-menu:   46px;
+        --h-footer: 40px;
+        --h-ctrl:   38px;
+        --pad-page: 12px;
+        --gap-page: 8px;
+      }
+    }
+
+    /* TABLET (601–1024px) */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      :root {
+        --fs-base:  15px;
+        --fs-h1:    36px;
+        --h-header: 60px;
+        --h-menu:   52px;
+        --h-footer: 44px;
+        --h-ctrl:   42px;
+        --pad-page: 16px;
+        --gap-page: 10px;
+      }
+    }
+
+    /* DESKTOP (> 1024px) */
+    @media (min-width: 1025px) {
+      :root {
+        --fs-base:  17px;
+        --fs-h1:    48px;
+        --h-header: 72px;
+        --h-menu:   60px;
+        --h-footer: 52px;
+        --h-ctrl:   46px;
+        --pad-page: 20px;
+        --gap-page: 14px;
+      }
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      font-size: var(--fs-base);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      border: 4px solid var(--clr-blue);
+      box-shadow: 0 0 0 1px #93c5fd, inset 0 0 0 1px #1d4ed8;
+    }
+
+    /* ── HEADER ── */
+    header {
+      height: var(--h-header);
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 60%, #162d6e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 0 #0f1f5a, 0 6px 16px rgba(0,0,0,0.35);
+      position: relative;
+      z-index: 2;
+    }
+
+    header h1 {
+      color: #fff;
+      font-size: clamp(14px, var(--fs-h1), 18vw);
+      letter-spacing: clamp(1px, 6px, 2vw);
+      text-shadow: 0 2px 0 #0f1f5a, 0 4px 12px rgba(0,0,0,0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      max-width: 96%;
+      line-height: 1;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      min-height: 0;
+      background-color: var(--clr-bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── MENU BAR ── */
+    .menu-bar {
+      height: var(--h-menu);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: linear-gradient(180deg, #e2e8f0 0%, var(--clr-bg) 100%);
+      border-bottom: 2px solid var(--clr-border);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .menu-bar button {
+      flex: 1;
+      height: 100%;
+      min-width: 0;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: clamp(10px, var(--fs-base), 4vw);
+      font-weight: 800;
+      letter-spacing: clamp(0px, 1px, 0.5vw);
+      border-radius: var(--radius);
+      color: #fff;
+      border: none;
+      position: relative;
+      top: 0;
+      transition: top .1s, box-shadow .1s, filter .1s;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 4px;
+    }
+
+    .menu-bar button:nth-child(1) {
+      background: linear-gradient(180deg, #3b82f6 0%, var(--clr-blue) 100%);
+      box-shadow: 0 5px 0 #1a3fa0, 0 7px 14px rgba(37,99,235,0.35);
+    }
+    .menu-bar button:nth-child(2) {
+      background: linear-gradient(180deg, #22c55e 0%, var(--clr-green) 100%);
+      box-shadow: 0 5px 0 #0d7a30, 0 7px 14px rgba(22,163,74,0.35);
+    }
+    .menu-bar button:nth-child(3) {
+      background: linear-gradient(180deg, #ef4444 0%, var(--clr-red) 100%);
+      box-shadow: 0 5px 0 #991b1b, 0 7px 14px rgba(220,38,38,0.35);
+    }
+
+    .menu-bar button:hover { filter: brightness(1.1); }
+
+    .menu-bar button:active,
+    .menu-bar button.active {
+      top: 3px;
+    }
+    .menu-bar button:nth-child(1).active { box-shadow: 0 2px 0 #1a3fa0, 0 3px 6px rgba(37,99,235,0.25); }
+    .menu-bar button:nth-child(2).active { box-shadow: 0 2px 0 #0d7a30, 0 3px 6px rgba(22,163,74,0.25); }
+    .menu-bar button:nth-child(3).active { box-shadow: 0 2px 0 #991b1b, 0 3px 6px rgba(220,38,38,0.25); }
+
+    /* ── PAGES ── */
+    .pages {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page {
+      display: none;
+      height: 100%;
+      padding: var(--pad-page);
+      color: var(--clr-primary);
+      overflow: hidden;
+    }
+
+    .page.active {
+      display: flex;
+      flex-direction: column;
+      /* tidak pakai gap — tiap elemen atur margin sendiri agar tabel bisa flex:1 dengan benar */
+    }
+
+    /* ── SETING ── */
+    .seting-bulan-bar {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 8px;
+      flex-shrink: 0;
+      height: var(--h-ctrl);
+      margin-bottom: var(--gap-page);
+    }
+
+    .seting-bulan-kiri {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: row;
+      gap: 6px;
+      align-items: stretch;
+    }
+
+    #select-bulan {
+      flex: 3;
+      min-width: 0;
+      height: var(--h-ctrl);
+      border: 2px solid #1d4ed8;
+      border-bottom: 3px solid #1a3fa0;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: clamp(9px, 2.5vw, var(--fs-base));
+      font-weight: 600;
+      color: var(--clr-primary);
+      padding: 0 6px;
+      background: linear-gradient(180deg, #fff 0%, #eff6ff 100%);
+      cursor: pointer;
+      box-shadow: 0 3px 0 #1a3fa0, 0 5px 10px rgba(37,99,235,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
+      transition: box-shadow .1s;
+      appearance: none;
+      -webkit-appearance: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #select-bulan:focus {
+      outline: none;
+      box-shadow: 0 3px 0 #1a3fa0, 0 0 0 3px rgba(37,99,235,0.3);
+    }
+
+    /* 3D button mixin via shared class */
+    .btn-3d {
+      position: relative;
+      top: 0;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      transition: top .1s, box-shadow .1s, filter .1s;
+      letter-spacing: 0.5px;
+    }
+    .btn-3d:hover   { filter: brightness(1.08); }
+    .btn-3d:active  { top: 3px; }
+    .btn-3d:disabled { opacity: 0.45; cursor: not-allowed; filter: none; top: 0 !important; }
+
+    #btn-load-personil {
+      flex: 2;
+      min-width: 0;
+      height: var(--h-ctrl);
+      background: linear-gradient(180deg, #3b82f6 0%, var(--clr-blue) 100%);
+      box-shadow: 0 5px 0 #1a3fa0, 0 7px 14px rgba(37,99,235,0.3);
+      font-size: clamp(9px, 2vw, 14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 4px;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+    #btn-load-personil:active { box-shadow: 0 2px 0 #1a3fa0, 0 3px 6px rgba(37,99,235,0.2); }
+
+    #btn-generate {
+      flex: 1;
+      min-width: 0;
+      background: linear-gradient(180deg, #22c55e 0%, var(--clr-green) 100%);
+      box-shadow: 0 5px 0 #0d7a30, 0 7px 14px rgba(22,163,74,0.3);
+      font-size: clamp(9px, 2.5vw, var(--fs-base));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 6px;
+      line-height: 1.2;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      letter-spacing: 0;
+    }
+    #btn-generate:active { box-shadow: 0 2px 0 #0d7a30, 0 3px 6px rgba(22,163,74,0.2); }
+
+    /* ── TOAST NOTIFIKASI (melayang, tidak memakan layout) ── */
+    .info-bar,
+    .info-generate {
+      position: fixed;
+      bottom: calc(var(--h-footer) + 12px);
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      z-index: 8888;
+      max-width: calc(100vw - 32px);
+      font-size: clamp(10px, var(--fs-base), 4vw);
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 24px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2), 0 6px 20px rgba(0,0,0,0.25);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .info-bar.show,
+    .info-generate.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .info-bar.ok, .info-generate.ok       { background: linear-gradient(135deg,#dcfce7,#bbf7d0); color: #166534; border-left: 4px solid #16a34a; }
+    .info-bar.err, .info-generate.err     { background: linear-gradient(135deg,#fee2e2,#fecaca); color: #991b1b; border-left: 4px solid #dc2626; }
+    .info-bar.loading, .info-generate.loading { background: linear-gradient(135deg,#dbeafe,#bfdbfe); color: var(--clr-primary); border-left: 4px solid var(--clr-blue); }
+
+    /* ── TABEL PERSONIL ── */
+    #tabel-wrapper {
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 3px solid var(--clr-primary);
+      box-shadow: 0 5px 0 #0f1f5a, 0 8px 20px rgba(30,58,138,0.25);
+      display: none;
+      flex-direction: column;
+    }
+    #tabel-wrapper.visible {
+      display: block;
+    }
+
+    #tabel-personil {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      flex: 1;
+      min-height: 0;
+    }
+
+    #tabel-personil col.col-no   { width: 28px; }
+    #tabel-personil col.col-kode { width: 22%; }
+
+    #tabel-personil th:first-child,
+    #tabel-personil td:first-child { text-align: center; padding: 0 4px; }
+
+    #tabel-personil thead { display: table-header-group; }
+    #tabel-personil tbody { display: table-row-group; }
+
+    #tabel-personil thead th {
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 100%);
+      color: #fff;
+      padding: 0 8px;
+      text-align: left;
+      font-size: var(--tbl-fs, calc(var(--fs-base) * 0.85));
+      font-weight: 800;
+      height: var(--row-h, 2em);
+      border-right: 2px solid rgba(255,255,255,0.2);
+      border-bottom: 3px solid #0f1f5a;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    #tabel-personil thead th:last-child { border-right: none; text-align: center; }
+
+    #tabel-personil td {
+      padding: 0 8px;
+      border-bottom: 2px solid var(--clr-primary);
+      border-right: 2px solid var(--clr-primary);
+      color: var(--clr-primary);
+      font-size: var(--tbl-fs, calc(var(--fs-base) * 0.85));
+      height: var(--row-h, 2em);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    #tabel-personil td:last-child {
+      border-right: none;
+      overflow: hidden;
+      text-align: center;
+      padding: 0;
+    }
+
+    #tabel-personil tr:nth-child(even) td { background-color: #e2e8f0; }
+    #tabel-personil tr[style] td           { background-color: transparent !important; }
+    #tabel-personil tr:hover td           { filter: brightness(0.93); }
+
+    /* ── TABEL POLA ── */
+    #pola-wrapper {
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 3px solid var(--clr-primary);
+      box-shadow: 0 5px 0 #0f1f5a, 0 8px 20px rgba(30,58,138,0.25);
+      display: none;
+      flex-direction: column;
+    }
+    #pola-wrapper.visible {
+      display: flex;
+    }
+
+    #tabel-pola {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;   /* lebar kolom pasti, tidak overflow */
+      height: 100%;
+    }
+
+    /* Total 100%: NO=6, KODE=10, BUFF=18, SEN–JUM=5×10=50, NILAI=16 */
+    #tabel-pola col.col-pno    { width: 6%; }
+    #tabel-pola col.col-pkode  { width: 10%; }
+    #tabel-pola col.col-pbuff  { width: 18%; }
+    #tabel-pola col.col-phari  { width: 10%; }
+    #tabel-pola col.col-pnilai { width: 16%; }
+
+    /* ── TOOLTIP BUFF ── */
+    #buff-tooltip {
+      position: fixed;
+      z-index: 9999;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      box-shadow: 0 4px 0 #0f1f5a, 0 6px 18px rgba(0,0,0,0.35);
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(6px) scale(0.92);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    #buff-tooltip.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    #tabel-pola thead th {
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 100%);
+      color: #fff;
+      padding: 0 2px;
+      text-align: center;
+      font-size: var(--ptbl-fs-head, 8px);
+      font-weight: 800;
+      height: var(--prow-h, 1.5em);
+      border-right: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 2px solid #0f1f5a;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+
+    #tabel-pola thead th:last-child  { border-right: none; }
+
+    #tabel-pola td {
+      padding: 0 2px;
+      border-bottom: 1px solid var(--clr-primary);
+      border-right: 1px solid var(--clr-primary);
+      color: var(--clr-primary);
+      font-size: var(--ptbl-fs, 5px);
+      height: var(--prow-h, 1.5em);
+      overflow: hidden;
+      text-overflow: clip;
+      white-space: nowrap;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #tabel-pola td:last-child   { border-right: none; }
+
+    #tabel-pola tr:nth-child(even) td { background-color: #e2e8f0; }
+    #tabel-pola tr[style] td           { background-color: transparent !important; }
+    #tabel-pola tr:hover td           { filter: brightness(0.93); }
+
+    /* shift cell colors — applied via inline style on colored rows, class on plain rows */
+    .shift-p   { background: #bfdbfe; color: #1e3a8a; font-weight: 800; border-radius: 4px; }
+    .shift-sm  { background: #fef08a; color: #713f12; font-weight: 800; border-radius: 4px; }
+    .shift-off { color: #94a3b8; font-weight: 600; }
+
+    /* ── FOOTER ── */
+    footer {
+      height: var(--h-footer);
+      flex-shrink: 0;
+      background: linear-gradient(180deg, var(--clr-primary2) 0%, #0f1d3d 100%);
+      box-shadow: inset 0 3px 0 rgba(255,255,255,0.07);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>0048</h1>
+  </header>
+  <main>
+    <div class="menu-bar">
+      <button onclick="showPage('seting', this)" class="active">SETING</button>
+      <button onclick="showPage('pola', this)">POLA</button>
+      <button onclick="showPage('jadwal', this)">JADWAL</button>
+    </div>
+    <div class="pages">
+
+      <div class="page active" id="seting">
+        <div class="seting-bulan-bar">
+          <div class="seting-bulan-kiri">
+            <select id="select-bulan" onchange="onBulanChange()">
+              <option value="">— Memuat sheet... —</option>
+            </select>
+            <button id="btn-load-personil" class="btn-3d" onclick="loadPersonil()" style="display:none;">LOAD</button>
+          </div>
+          <button id="btn-generate" class="btn-3d" onclick="generateJadwal()" title="Buat Jadwal Bulan Baru">＋ BUAT JADWAL</button>
+        </div>
+        <div id="info-generate" class="info-generate"></div>
+        <div id="info-personil" class="info-generate"></div>
+        <div id="tabel-wrapper">
+          <table id="tabel-personil">
+            <colgroup>
+              <col class="col-no">
+              <col>
+              <col class="col-kode">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>NO</th>
+                <th>NAMA</th>
+                <th>KODE</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-personil"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page" id="pola">
+        <div id="info-pola" class="info-generate"></div>
+        <div id="pola-wrapper">
+          <table id="tabel-pola">
+            <colgroup>
+              <col class="col-pno">
+              <col class="col-pkode">
+              <col class="col-pbuff">
+              <col class="col-phari">
+              <col class="col-phari">
+              <col class="col-phari">
+              <col class="col-phari">
+              <col class="col-phari">
+              <col class="col-pnilai">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>NO</th>
+                <th>KODE</th>
+                <th>BUFF</th>
+                <th>SEN</th>
+                <th>SEL</th>
+                <th>RAB</th>
+                <th>KAM</th>
+                <th>JUM</th>
+                <th>NILAI</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-pola"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="page" id="jadwal">Halaman JADWAL</div>
+
+    </div>
+  </main>
+  <footer></footer>
+  <div id="buff-tooltip"></div>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydZBaKTP8dg949an-aOIs1Qnn9c2vT3x2RRkLGkSSndJxdgOxVRI2G1bGfwSd9S--a/exec';
+
+    const NAMA_BULAN = ['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI',
+                        'JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
+
+    function isSheetJadwal(name) {
+      const upper = name.trim().toUpperCase();
+      return NAMA_BULAN.some(b => upper.startsWith(b + ' ')) && /\d{4}$/.test(upper);
+    }
+
+    const _polaLoaded = { done: false };
+
+    function showPage(id, btn) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.menu-bar button').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'pola' && !_polaLoaded.done) {
+        _polaLoaded.done = true;
+        loadPola();
+      }
+    }
+
+    // 3D press ripple on menu buttons
+    document.querySelectorAll && document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.menu-bar button').forEach(btn => {
+        btn.addEventListener('mousedown', () => btn.style.top = '3px');
+        btn.addEventListener('mouseup',   () => btn.style.top = '');
+        btn.addEventListener('mouseleave',() => btn.style.top = '');
+      });
+    });
+
+    async function loadSheets() {
+      const sel = document.getElementById('select-bulan');
+      sel.innerHTML = '<option value="">— Memuat... —</option>';
+      try {
+        const res  = await fetch(`${APPS_SCRIPT_URL}?action=getSheets`, { redirect: 'follow' });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+
+        const jadwal = json.sheets.filter(isSheetJadwal);
+        if (jadwal.length === 0) {
+          sel.innerHTML = '<option value="">— Belum ada sheet jadwal —</option>';
+          return;
+        }
+        sel.innerHTML = '<option value="">— Pilih Bulan —</option>';
+        jadwal.forEach(name => {
+          sel.innerHTML += `<option value="${name}">${name}</option>`;
+        });
+      } catch (err) {
+        sel.innerHTML = '<option value="">— Gagal memuat —</option>';
+        showToast('❌ Gagal memuat sheet: ' + err.message, 'err', 8000);
+      }
+    }
+
+    // ── TOAST terpusat ──
+    let _toastTimer = null;
+    function showToast(msg, type, duration) {
+      // type: 'ok' | 'err' | 'loading'
+      // duration: ms, 0 = permanen sampai dipanggil lagi
+      const els = document.querySelectorAll('.info-generate, .info-bar');
+      els.forEach(el => {
+        el.textContent = msg;
+        el.className = 'info-generate ' + type + (msg ? ' show' : '');
+      });
+      clearTimeout(_toastTimer);
+      if (duration && duration > 0) {
+        _toastTimer = setTimeout(() => hideToast(), duration);
+      }
+    }
+    function hideToast() {
+      document.querySelectorAll('.info-generate, .info-bar').forEach(el => {
+        el.classList.remove('show');
+      });
+    }
+
+    function setInfoGenerate(msg, type) {
+      const dur = type === 'loading' ? 0 : type === 'ok' ? 3000 : 5000;
+      showToast(msg, type, dur);
+    }
+
+    async function generateJadwal() {
+      const btn = document.getElementById('btn-generate');
+      btn.disabled = true;
+      setInfoGenerate('⏳ Mengirim permintaan generate...', 'loading');
+
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          body: JSON.stringify({ action: 'generateJadwal', sheet: namaSheet })
+        });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+        setInfoGenerate('✅ ' + json.message, 'ok');
+        loadSheets(); // refresh dropdown setelah generate
+      } catch (err) {
+        setInfoGenerate('❌ Gagal: ' + err.message, 'err');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function onBulanChange() {
+      const val = document.getElementById('select-bulan').value;
+      const btnLoad = document.getElementById('btn-load-personil');
+      btnLoad.style.display = val ? 'flex' : 'none';
+      document.getElementById('tabel-wrapper').classList.remove('visible');
+      document.getElementById('tbody-personil').innerHTML = '';
+    }
+
+    async function loadPersonil() {
+      const namaSheet = document.getElementById('select-bulan').value;
+      if (!namaSheet) return;
+
+      const btn = document.getElementById('btn-load-personil');
+      btn.disabled = true;
+      showToast('⏳ Memuat personil...', 'loading', 0);
+      document.getElementById('tabel-wrapper').classList.remove('visible');
+
+      try {
+        // Ambil NAMA (F6:F15) dan KODE (kolom AM6:AM15) dari sheet yang dipilih
+        const urlNama = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=F6:F15`;
+        const urlKode = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=AM6:AM15`;
+
+        const [resNama, resKode] = await Promise.all([
+          fetch(urlNama, { redirect: 'follow' }),
+          fetch(urlKode, { redirect: 'follow' })
+        ]);
+        const [jsonNama, jsonKode] = await Promise.all([resNama.json(), resKode.json()]);
+
+        if (jsonNama.status !== 'ok') throw new Error(jsonNama.message);
+        if (jsonKode.status !== 'ok') throw new Error(jsonKode.message);
+
+        const tbody = document.getElementById('tbody-personil');
+        tbody.innerHTML = '';
+        let ada = false;
+        jsonNama.data.forEach((row, i) => {
+          const nama = (row[0] || '').toString().trim();
+          const kode = (jsonKode.data[i]?.[0] || '').toString().trim();
+          if (!nama) return;
+          ada = true;
+          const clr = kodeColor(kode);
+          const rowBg  = `background:${clr.bg};`;
+          const btnStyle = `background:${clr.btnBg};color:${clr.text};border:2px solid ${clr.shadow};box-shadow:0 4px 0 ${clr.shadow};text-shadow:0 1px 1px rgba(0,0,0,0.15);border-radius:6px;padding:2px 4px;font-weight:800;font-size:var(--tbl-fs,0.82em);cursor:default;display:flex;align-items:center;justify-content:center;width:100%;height:100%;box-sizing:border-box;overflow:hidden;white-space:nowrap;`;
+          tbody.innerHTML += `<tr style="${rowBg}">
+            <td style="${rowBg}">${i + 1}</td>
+            <td style="${rowBg}">${nama}</td>
+            <td style="${rowBg}padding:0;">
+              <span style="${btnStyle}">${kode || '-'}</span>
+            </td>
+          </tr>`;
+        });
+
+        hideToast();
+        const wrapper = document.getElementById('tabel-wrapper');
+        if (ada) { wrapper.classList.add('visible'); fitTabel(); }
+        else { wrapper.classList.remove('visible'); showToast('⚠ Tidak ada data personil di sheet ini.', 'err', 5000); }
+      } catch (err) {
+        showToast('❌ Gagal memuat: ' + err.message, 'err', 5000);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function kodeColor(kode) {
+      const k = (kode || '').toString().trim().toUpperCase();
+      if (k === 'A' || k === 'B') return { bg:'#fef08a', btnBg:'#fef9c3', shadow:'#a16207', text:'#713f12' };
+      if (k === 'G' || k === 'H') return { bg:'#ddd6fe', btnBg:'#ede9fe', shadow:'#5b21b6', text:'#4c1d95' };
+      if (k === 'I' || k === 'J') return { bg:'#fed7aa', btnBg:'#ffedd5', shadow:'#c2410c', text:'#7c2d12' };
+      return { bg:'#e2e8f0', btnBg:'#f1f5f9', shadow:'#475569', text:'#1e293b' };
+    }
+
+    function fitTabel() {
+      requestAnimationFrame(() => {
+        const page    = document.getElementById('seting');
+        const bar     = page.querySelector('.seting-bulan-bar');
+        const wrapper = document.getElementById('tabel-wrapper');
+        const tabel   = document.getElementById('tabel-personil');
+        const rows    = tabel.querySelectorAll('tr');
+        if (!rows.length) return;
+
+        const padPage = parseFloat(getComputedStyle(page).paddingTop) + parseFloat(getComputedStyle(page).paddingBottom);
+        const gapBar  = parseFloat(getComputedStyle(bar).marginBottom) || 0;
+        const availH  = page.clientHeight - padPage - bar.offsetHeight - gapBar;
+        if (availH <= 0) return;
+
+        wrapper.style.height = availH + 'px';
+        wrapper.style.overflow = 'hidden';
+
+        // Kurangi: border wrapper 6px + border tiap baris (2px × jumlah baris)
+        const borderTotal = 6 + (rows.length * 2);
+        const rowH = Math.floor((availH - borderTotal) / rows.length);
+        const fs   = Math.min(14, Math.max(9, Math.floor(rowH * 0.58)));
+
+        wrapper.style.setProperty('--row-h', rowH + 'px');
+        wrapper.style.setProperty('--tbl-fs', fs + 'px');
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('tabel-wrapper').classList.contains('visible')) fitTabel();
+      if (document.getElementById('pola-wrapper').classList.contains('visible')) fitPolaTable();
+    });
+
+    // ── POLA ──
+    async function loadPola() {
+      const wrapper = document.getElementById('pola-wrapper');
+
+      showToast('⏳ Memuat pola shift...', 'loading', 0);
+      wrapper.classList.remove('visible');
+
+      try {
+        const url = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent('POLA SHIFT')}&range=B2:J12`;
+        const res  = await fetch(url, { redirect: 'follow' });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+
+        const HARI = ['SEN','SEL','RAB','KAM','JUM'];
+        const tbody = document.getElementById('tbody-pola');
+        tbody.innerHTML = '';
+        let ada = false;
+
+        json.data.slice(1).forEach(row => {
+          const no   = (row[0] || '').toString().trim();
+          const kode = (row[1] || '').toString().trim();
+          const buffRaw = (row[2] || '').toString().trim();
+          const buff = singkatBuff(buffRaw);
+          if (!no && !kode) return;
+          ada = true;
+
+          const clr = kodeColor(kode);
+          const rowBg = clr ? `background:${clr.bg};` : '';
+
+          // kode button
+          const btnStyle = clr
+            ? `background:${clr.bg};color:${clr.text};border:1px solid ${clr.shadow};box-shadow:0 2px 0 ${clr.shadow};border-radius:3px;padding:0 1px;font-weight:800;font-size:var(--ptbl-fs,0.58em);cursor:default;display:block;line-height:1.5;width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;text-align:center;`
+            : `background:#e2e8f0;color:#475569;border:1px solid #94a3b8;box-shadow:0 2px 0 #64748b;border-radius:3px;padding:0 1px;font-weight:800;font-size:var(--ptbl-fs,0.58em);cursor:default;display:block;line-height:1.5;width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;text-align:center;`;
+
+          // hari cells (index 3-7)
+          let hariTds = '';
+          for (let h = 0; h < 5; h++) {
+            const val = (row[3 + h] || '').toString().trim().toUpperCase();
+            let cls = '', cellBg = rowBg;
+            if (val === 'P') {
+              cls = 'shift-p';
+              cellBg = 'background:#bfdbfe;';
+            } else if (val === 'SM') {
+              cls = 'shift-sm';
+              cellBg = 'background:#fef08a;';
+            } else if (val === 'OFF') {
+              cls = 'shift-off';
+              cellBg = rowBg;
+            } else {
+              cellBg = rowBg;
+            }
+            hariTds += `<td class="${cls}" style="${cellBg}">${val || ''}</td>`;
+          }
+
+          const nilai = (row[8] || '').toString().trim();
+
+          tbody.innerHTML += `<tr style="${rowBg}">
+            <td style="${rowBg}">${no}</td>
+            <td style="${rowBg};text-align:center;"><span style="${btnStyle}">${kode || '-'}</span></td>
+            <td style="${rowBg};cursor:pointer;user-select:none;" onclick="showBuffTooltip(event,'${buffRaw.replace(/'/g,"&#39;")}')">${buff}</td>
+            ${hariTds}
+            <td style="${rowBg}">${nilai}</td>
+          </tr>`;
+        });
+
+        hideToast();
+        if (ada) { wrapper.classList.add('visible'); fitPolaTable(); }
+        else { wrapper.classList.remove('visible'); showToast('⚠ Tidak ada data pola.', 'err', 5000); }
+      } catch (err) {
+        showToast('❌ Gagal memuat: ' + err.message, 'err', 5000);
+      }
+    }
+
+    // ── TOOLTIP BUFF ──
+    let _buffTimer = null;
+    function showBuffTooltip(e, label) {
+      const tip = document.getElementById('buff-tooltip');
+      tip.textContent = label;
+
+      // Posisi: di atas / bawah titik klik, pastikan tidak keluar layar
+      const x = e.clientX;
+      const y = e.clientY;
+      tip.style.left = '0px';
+      tip.style.top  = '0px';
+      tip.classList.remove('show');
+
+      requestAnimationFrame(() => {
+        const tw = tip.offsetWidth;
+        const th = tip.offsetHeight;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        let left = x - tw / 2;
+        let top  = y - th - 12;   // default: di atas kursor
+
+        if (left < 6)        left = 6;
+        if (left + tw > vw - 6) left = vw - tw - 6;
+        if (top < 6)         top  = y + 20;  // kalau terlalu atas, pindah ke bawah
+        if (top + th > vh - 6) top = y - th - 12;
+
+        tip.style.left = left + 'px';
+        tip.style.top  = top  + 'px';
+        tip.classList.add('show');
+      });
+
+      // Auto-hilang setelah 1.8 detik
+      clearTimeout(_buffTimer);
+      _buffTimer = setTimeout(() => {
+        tip.classList.remove('show');
+      }, 1800);
+    }
+
+    // ── Peta singkatan BUFF ──
+    function singkatBuff(raw) {
+      const r = raw.trim().toUpperCase();
+      // Mapping eksplisit dulu
+      const map = {
+        'NON SHIFT'       : 'NS',
+        'NONSHIFT'        : 'NS',
+        'X NON SHIFT'     : 'XNS',   // bekas Non Shift
+        'X NONSHIFT'      : 'XNS',
+        'XNONSHIFT'       : 'XNS',
+        'UMUM'            : 'UMUM',
+        'PELUNCUR'        : 'PLR',
+      };
+      if (map[r] !== undefined) return map[r];
+      // Jika sudah singkat (≤5 karakter), tampilkan apa adanya
+      if (raw.length <= 5) return raw;
+      // Fallback: ambil huruf kapital saja sebagai akronim
+      const akronim = raw.match(/[A-Z]/g);
+      return akronim ? akronim.join('') : raw;
+    }
+
+    function fitPolaTable() {
+      requestAnimationFrame(() => {
+        const page    = document.getElementById('pola');
+        const wrapper = document.getElementById('pola-wrapper');
+        const tabel   = document.getElementById('tabel-pola');
+        const rows    = tabel.querySelectorAll('tr');
+        if (!rows.length) return;
+
+        const padPage = parseFloat(getComputedStyle(page).paddingTop) + parseFloat(getComputedStyle(page).paddingBottom);
+        const availH  = page.clientHeight - padPage;
+
+        if (availH <= 0) return;
+        wrapper.style.height = availH + 'px';
+
+        const rowH = Math.floor(availH / rows.length);
+        wrapper.style.setProperty('--prow-h', Math.max(rowH, 20) + 'px');
+        const fs = Math.min(9, Math.max(5, Math.floor(rowH * 0.28)));
+        wrapper.style.setProperty('--ptbl-fs', fs + 'px');
+        wrapper.style.setProperty('--ptbl-fs-head', '8px');
+      });
+    }
+
+    // Auto load dropdown saat halaman dibuka
+    loadSheets();
+  </script>
+</body>
+</html>
