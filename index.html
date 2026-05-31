@@ -362,11 +362,13 @@
       min-height: 0;
     }
 
-    #tabel-personil col.col-no   { width: 28px; }
+    #tabel-personil col.col-no   { width: 38px; }
     #tabel-personil col.col-kode { width: 22%; }
 
     #tabel-personil th:first-child,
     #tabel-personil td:first-child { text-align: center; padding: 0 4px; }
+
+    #tabel-personil thead th:nth-child(2) { text-align: center; }
 
     #tabel-personil thead { display: table-header-group; }
     #tabel-personil tbody { display: table-row-group; }
@@ -415,7 +417,8 @@
 
     /* ── TABEL POLA ── */
     #pola-wrapper {
-      flex-shrink: 0;
+      flex: 1;
+      min-height: 0;
       overflow: hidden;
       border-radius: var(--radius);
       border: 3px solid var(--clr-primary);
@@ -469,7 +472,7 @@
       color: #fff;
       padding: 0 2px;
       text-align: center;
-      font-size: var(--ptbl-fs-head, 8px);
+      font-size: var(--ptbl-fs-head, 12px);
       font-weight: 800;
       height: var(--prow-h, 1.5em);
       border-right: 1px solid rgba(255,255,255,0.2);
@@ -488,7 +491,7 @@
       border-bottom: 1px solid var(--clr-primary);
       border-right: 1px solid var(--clr-primary);
       color: var(--clr-primary);
-      font-size: var(--ptbl-fs, 5px);
+      font-size: var(--ptbl-fs, 10px);
       height: var(--prow-h, 1.5em);
       overflow: hidden;
       text-overflow: clip;
@@ -508,6 +511,873 @@
     .shift-sm  { background: #fef08a; color: #713f12; font-weight: 800; border-radius: 4px; }
     .shift-off { color: #94a3b8; font-weight: 600; }
 
+    /* ── GLOBAL LOADING BLOCKER ── */
+    #loading-blocker {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 8999;
+      cursor: wait;
+      background: rgba(0,0,0,0.35);
+      align-items: center;
+      justify-content: center;
+    }
+    #loading-blocker.show { display: flex; }
+
+    #loading-blocker .loading-box {
+      background: linear-gradient(160deg, #1e3a8a, #1e40af);
+      border: 3px solid #3b82f6;
+      border-radius: 14px;
+      box-shadow: 0 8px 0 #0f1f5a, 0 12px 30px rgba(0,0,0,0.5);
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #loading-blocker .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top-color: #facc15;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #loading-blocker .loading-text {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    #btn-edit-header {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #000;
+      box-shadow: 0 3px 0 #450a0a, 0 5px 10px rgba(0,0,0,0.4);
+      color: #dc2626;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: clamp(9px, 2vw, 13px);
+      font-weight: 800;
+      padding: 0 10px;
+      height: calc(var(--h-header) * 0.55);
+      cursor: pointer;
+      text-shadow: none;
+      letter-spacing: 0.5px;
+      transition: filter .1s, background .2s, color .2s, box-shadow .2s;
+    }
+    #btn-edit-header:hover { filter: brightness(1.2); }
+    #btn-edit-header:active { transform: translateY(calc(-50% + 3px)); box-shadow: 0 1px 0 #450a0a; }
+    #btn-edit-header.admin-on {
+      background: #dc2626;
+      color: #000;
+      border: 2px solid #fff;
+      box-shadow: 0 3px 0 #450a0a, 0 5px 10px rgba(220,38,38,0.4);
+    }
+    #btn-edit-header.admin-on:active { box-shadow: 0 1px 0 #450a0a; }
+
+    /* ── MODAL OVERLAY ── */
+    #pin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+    }
+    #pin-overlay.show { display: flex; }
+
+    #pin-modal {
+      width: 80vw;
+      height: 80vh;
+      background: linear-gradient(160deg, #f0f6ff 0%, #e8f0fe 100%);
+      border-radius: 14px;
+      border: 3px solid var(--clr-primary);
+      box-shadow: 0 8px 0 #0f1f5a, 0 12px 40px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #pin-modal-header {
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: clamp(11px, 3vw, 16px);
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      padding: 0 14px;
+      height: 42px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #btn-pin-close {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+      color: #fff;
+      border: none;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #991b1b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter .1s;
+    }
+    #btn-pin-close:hover  { filter: brightness(1.15); }
+    #btn-pin-close:active { transform: translateY(calc(-50% + 2px)); box-shadow: 0 1px 0 #991b1b; }
+
+    #pin-modal-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 12px 16px;
+    }
+
+    #pin-display {
+      width: 70%;
+      height: 7%;
+      min-height: 32px;
+      background: #1e3a8a;
+      border-radius: 8px;
+      border: 2px solid #0f1f5a;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10%;
+    }
+
+    .pin-dot {
+      width: 14%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #334155;
+      border: 2px solid #475569;
+      transition: background .15s, border-color .15s;
+    }
+    .pin-dot.filled {
+      background: #facc15;
+      border-color: #a16207;
+      box-shadow: 0 0 6px rgba(250,204,21,0.6);
+    }
+
+    #pin-status {
+      font-size: clamp(10px, 2.5vw, 13px);
+      font-weight: 700;
+      color: #dc2626;
+      min-height: 18px;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    #pin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3%;
+      width: 80%;
+      flex: 1;
+      max-height: 72%;
+    }
+
+    .pin-btn {
+      border-radius: 8px;
+      border: none;
+      font-family: inherit;
+      font-size: clamp(14px, 4vw, 22px);
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      color: #fff;
+      box-shadow: 0 4px 0 #1a3fa0, 0 6px 12px rgba(37,99,235,0.3);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: filter .1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+    .pin-btn:hover  { filter: brightness(1.1); }
+    .pin-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #1a3fa0; }
+
+    .pin-btn.del {
+      background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+      box-shadow: 0 4px 0 #991b1b, 0 6px 12px rgba(220,38,38,0.3);
+    }
+    .pin-btn.del:active { box-shadow: 0 1px 0 #991b1b; }
+    .pin-btn.empty { background: transparent; box-shadow: none; cursor: default; pointer-events: none; }
+
+    /* ── TAB JADWAL ── */
+    .jadwal-ctrl-bar {
+      display: flex; flex-direction: row; align-items: stretch;
+      gap: 8px; flex-shrink: 0; height: var(--h-ctrl);
+      margin-bottom: var(--gap-page);
+    }
+    #select-jadwal-bulan {
+      flex: 3; min-width: 0; height: var(--h-ctrl);
+      border: 2px solid #1d4ed8; border-bottom: 3px solid #1a3fa0;
+      border-radius: var(--radius); font-family: inherit;
+      font-size: clamp(9px, 2.5vw, var(--fs-base)); font-weight: 600;
+      color: var(--clr-primary); padding: 0 6px;
+      background: linear-gradient(180deg, #fff 0%, #eff6ff 100%);
+      cursor: pointer;
+      box-shadow: 0 3px 0 #1a3fa0, 0 5px 10px rgba(37,99,235,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
+      appearance: none; -webkit-appearance: none;
+    }
+    #select-jadwal-bulan:focus { outline: none; box-shadow: 0 3px 0 #1a3fa0, 0 0 0 3px rgba(37,99,235,0.3); }
+    #btn-load-jadwal {
+      flex: 2; min-width: 0; height: var(--h-ctrl);
+      background: linear-gradient(180deg, #3b82f6 0%, var(--clr-blue) 100%);
+      box-shadow: 0 5px 0 #1a3fa0, 0 7px 14px rgba(37,99,235,0.3);
+      font-size: clamp(9px, 2vw, 14px); display: flex;
+      align-items: center; justify-content: center;
+      white-space: nowrap; padding: 0 4px; line-height: 1;
+    }
+    #btn-load-jadwal:active { box-shadow: 0 2px 0 #1a3fa0, 0 3px 6px rgba(37,99,235,0.2); }
+    #info-jadwal {
+      font-size: clamp(10px, 2vw, 13px); margin-bottom: 6px;
+      color: #64748b; flex-shrink: 0; min-height: 18px;
+    }
+
+    /* Wrapper: flex column, scroll HANYA horizontal */
+    #jadwal-table-wrapper {
+      flex: 1; min-height: 0;
+      border-radius: var(--radius);
+      border: 3px solid var(--clr-primary);
+      box-shadow: 0 5px 0 #0f1f5a, 0 8px 20px rgba(30,58,138,0.25);
+      display: none;
+      flex-direction: column;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    #jadwal-table-wrapper.visible { display: flex; }
+
+    /* Tabel tunggal: isi penuh tinggi wrapper */
+    #tabel-jadwal {
+      border-collapse: collapse;
+      font-size: clamp(8px, 1.5vw, 12px);
+      table-layout: fixed;
+      width: max-content;
+      min-width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+    #tabel-jadwal col.col-jadwal-nama  { width: 110px; }
+    #tabel-jadwal col.col-jadwal-shift { width: 34px; }
+
+    /* Header sticky atas */
+    #tabel-jadwal thead { position: sticky; top: 0; z-index: 3; }
+
+    /* Kolom NAMA: sticky kiri, rowspan 2 */
+    #tabel-jadwal th.th-nama {
+      position: sticky; left: 0; z-index: 4;
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 100%);
+      color: #fff;
+      padding: 0 10px; text-align: center;
+      font-size: clamp(9px, 1.8vw, 13px); font-weight: 900;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      /* Border kanan tebal pemisah nama vs shift */
+      border-right: 3px solid #fff;
+      border-bottom: 3px solid #0f1f5a;
+      white-space: nowrap;
+      min-width: 100px; max-width: 140px;
+    }
+
+    /* Sel data NAMA: sticky kiri */
+    #tabel-jadwal td.td-nama {
+      position: sticky; left: 0; z-index: 2;
+      padding: 0 10px;
+      font-weight: 900;
+      font-size: clamp(9px, 1.8vw, 13px);
+      /* Border kanan tebal pemisah nama vs shift */
+      border-right: 3px solid var(--clr-primary);
+      /* Border bawah tegas antar baris */
+      border-bottom: 2px solid var(--clr-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      min-width: 100px; max-width: 140px;
+    }
+
+    /* Header shift — baris minggu */
+    #tabel-jadwal thead th.th-minggu {
+      background: #1e3a8a; color: #fff;
+      padding: 0 2px; text-align: center;
+      font-size: clamp(7px, 1.3vw, 11px); font-weight: 800;
+      /* Border kanan antar minggu tebal */
+      border-right: 2px solid rgba(255,255,255,0.5);
+      border-bottom: 2px solid #0f1f5a;
+      white-space: nowrap;
+      width: clamp(30px, 3.8vw, 50px);
+    }
+    /* Border kanan terakhir kolom setiap minggu lebih tebal — diterapkan via JS */
+    #tabel-jadwal thead th.th-minggu-last {
+      border-right: 3px solid rgba(255,255,255,0.7);
+    }
+
+    /* Header shift — baris hari/tgl */
+    #tabel-jadwal thead th {
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 100%);
+      color: #fff;
+      padding: 0 2px; text-align: center;
+      font-size: clamp(7px, 1.4vw, 11px); font-weight: 800;
+      border-right: 1px solid rgba(255,255,255,0.25);
+      border-bottom: 3px solid #0f1f5a;
+      white-space: nowrap;
+      width: clamp(30px, 3.8vw, 50px);
+    }
+    /* Kolom terakhir tiap minggu — border kanan tebal */
+    #tabel-jadwal thead th.th-hari-last {
+      border-right: 3px solid rgba(255,255,255,0.6);
+    }
+    #tabel-jadwal thead th.th-sabmin { background: #7f1d1d; }
+    #tabel-jadwal thead th.th-sabmin.th-hari-last { border-right: 3px solid rgba(255,255,255,0.6); }
+
+    /* Sel data shift */
+    #tabel-jadwal td {
+      padding: 0 2px; text-align: center;
+      /* Border kanan tipis antar kolom biasa */
+      border-right: 1px solid rgba(30,58,138,0.25);
+      /* Border bawah tegas antar baris */
+      border-bottom: 2px solid var(--clr-primary);
+      white-space: nowrap;
+      width: clamp(30px, 3.8vw, 50px);
+    }
+    /* Kolom terakhir tiap minggu — border kanan tebal */
+    #tabel-jadwal td.td-col-last {
+      border-right: 3px solid var(--clr-primary);
+    }
+
+    #tabel-jadwal tr:hover td { filter: brightness(0.93); }
+    #tabel-jadwal tr:hover td.td-nama { filter: brightness(0.88); }
+    #tabel-jadwal td.shift-libur { color: #94a3b8; }
+    #tabel-jadwal td.shift-sabmin { background: #fee2e2 !important; color: #991b1b; font-weight: 700; }
+
+        /* ── MODAL GENERATE JADWAL (2-STEP) ── */
+    #generate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+    }
+    #generate-overlay.show { display: flex; }
+
+    #generate-modal {
+      width: min(96vw, 420px);
+      height: auto;
+      max-height: 88dvh;
+      background: linear-gradient(160deg, #f0f6ff 0%, #e8f0fe 100%);
+      border-radius: 12px;
+      border: 3px solid var(--clr-primary);
+      box-shadow: 0 6px 0 #0f1f5a, 0 10px 32px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── header modal ── */
+    #generate-modal-header {
+      background: linear-gradient(180deg, #2a4fa8 0%, var(--clr-primary) 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: clamp(10px, 2.5vw, 13px);
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      padding: 0 38px 0 12px;
+      height: 34px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #btn-gen-close {
+      position: absolute;
+      right: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+      color: #fff; border: none;
+      font-size: 12px; font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #991b1b;
+      display: flex; align-items: center; justify-content: center;
+      transition: filter .1s;
+    }
+    #btn-gen-close:hover  { filter: brightness(1.15); }
+    #btn-gen-close:active { transform: translateY(calc(-50% + 2px)); box-shadow: 0 1px 0 #991b1b; }
+
+    /* ── step indicator ── */
+    .gen-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 7px 20px 0;
+      flex-shrink: 0;
+    }
+    .gen-step-dot {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      color: #64748b;
+      font-size: 10px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #94a3b8;
+      flex-shrink: 0;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .gen-step-dot.active {
+      background: linear-gradient(180deg, #3b82f6, var(--clr-blue));
+      color: #fff; border-color: #1a3fa0;
+      box-shadow: 0 2px 0 #1a3fa0;
+    }
+    .gen-step-dot.done {
+      background: linear-gradient(180deg, #22c55e, var(--clr-green));
+      color: #fff; border-color: #0d7a30;
+      box-shadow: 0 2px 0 #0d7a30;
+    }
+    .gen-step-line {
+      flex: 1; height: 2px;
+      background: #cbd5e1;
+      border-radius: 2px;
+      transition: background .3s;
+    }
+    .gen-step-line.done { background: var(--clr-green); }
+
+    .gen-step-labels {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 10px 0;
+      flex-shrink: 0;
+    }
+    .gen-step-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      text-align: center;
+      width: 22px;
+    }
+    .gen-step-label.active { color: var(--clr-blue); }
+    .gen-step-label.done   { color: var(--clr-green); }
+
+    /* ── panel ── */
+    #gen-panel-1,
+    #gen-panel-2 {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 12px 10px;
+      gap: 6px;
+      overflow: hidden;
+    }
+    #gen-panel-2 { display: none; }
+
+    /* ── fields step 1 ── */
+    .gen-field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--clr-primary);
+      margin-bottom: 3px;
+      letter-spacing: 0.5px;
+    }
+    .gen-field select,
+    .gen-field input[type="number"] {
+      width: 100%;
+      height: 34px;
+      border: 2px solid #1d4ed8;
+      border-bottom: 3px solid #1a3fa0;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: clamp(10px, 2.5vw, 13px);
+      font-weight: 700;
+      color: var(--clr-primary);
+      padding: 0 8px;
+      background: linear-gradient(180deg,#fff 0%,#eff6ff 100%);
+      box-shadow: 0 3px 0 #1a3fa0, inset 0 1px 0 rgba(255,255,255,.9);
+      box-sizing: border-box;
+      appearance: none; -webkit-appearance: none;
+    }
+    .gen-field select:focus,
+    .gen-field input[type="number"]:focus {
+      outline: none;
+      box-shadow: 0 3px 0 #1a3fa0, 0 0 0 2px rgba(37,99,235,.3);
+    }
+    .gen-fields-row {
+      display: flex;
+      gap: 8px;
+    }
+    .gen-fields-row .gen-field { flex: 1; min-width: 0; }
+
+    /* ── tombol step 1 ── */
+    #btn-gen-step1 {
+      width: 100%;
+      height: 34px;
+      background: linear-gradient(180deg,#22c55e 0%,var(--clr-green) 100%);
+      box-shadow: 0 4px 0 #0d7a30, 0 6px 12px rgba(22,163,74,.3);
+      font-size: clamp(10px, 2.5vw, 13px);
+      flex-shrink: 0;
+    }
+    #btn-gen-step1:active { box-shadow: 0 2px 0 #0d7a30; }
+
+    /* ── status ── */
+    .gen-status {
+      font-size: 10px;
+      font-weight: 700;
+      min-height: 13px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+
+
+    /* ── TABEL PERSONIL STEP 2 ── */
+    #gen-personil-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--clr-primary);
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+    #gen-tabel-wrap {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 2px solid var(--clr-primary);
+      box-shadow: 0 3px 0 #0f1f5a;
+    }
+    #gen-tabel-personil {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    #gen-tabel-personil col.gcol-no   { width: 26px; }
+    #gen-tabel-personil col.gcol-nama { width: auto; }
+    #gen-tabel-personil col.gcol-kode { width: 96px; }
+
+    #gen-tabel-personil thead th {
+      background: linear-gradient(180deg,#2a4fa8 0%,var(--clr-primary) 100%);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      height: 22px;
+      padding: 0 4px;
+      text-align: left;
+      border-right: 2px solid rgba(255,255,255,.2);
+      border-bottom: 2px solid #0f1f5a;
+      white-space: nowrap;
+      position: sticky; top: 0; z-index: 1;
+    }
+    #gen-tabel-personil thead th:first-child { text-align: center; }
+    #gen-tabel-personil thead th:last-child   { border-right: none; text-align: center; }
+
+    #gen-tabel-personil td {
+      padding: 0 4px;
+      height: 24px;
+      border-bottom: 1px solid var(--clr-primary);
+      border-right: 1px solid var(--clr-primary);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--clr-primary);
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    #gen-tabel-personil td:first-child { text-align: center; }
+    #gen-tabel-personil td:last-child   { border-right: none; padding: 2px 3px; }
+    #gen-tabel-personil tr:last-child td { border-bottom: none; }
+    #gen-tabel-personil tr:nth-child(even) td { background: #e2e8f0; }
+
+    /* ── KODE BADGE (di tabel — klik untuk buka picker) ── */
+    .kode-badge {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%;
+      font-weight: 900; font-size: var(--tbl-fs, 0.82em);
+      border-radius: 5px; cursor: pointer;
+      border: 2px solid; box-sizing: border-box;
+      transition: filter .1s;
+      user-select: none;
+    }
+    .kode-badge:hover  { filter: brightness(0.92); }
+    .kode-badge:active { transform: scale(.95); }
+    .kode-badge.kode-ns   { background:#fef9c3; color:#713f12; border-color:#a16207; box-shadow:0 3px 0 #a16207; }
+    .kode-badge.kode-umum { background:#d1fae5; color:#065f46; border-color:#059669; box-shadow:0 3px 0 #059669; }
+    .kode-badge.kode-xns  { background:#ede9fe; color:#4c1d95; border-color:#5b21b6; box-shadow:0 3px 0 #5b21b6; }
+    .kode-badge.kode-plr  { background:#ffedd5; color:#7c2d12; border-color:#c2410c; box-shadow:0 3px 0 #c2410c; }
+    .kode-badge.kode-nil { background:#f1f5f9; color:#64748b; border-color:#94a3b8; box-shadow:0 3px 0 #94a3b8; border-style: dashed; }
+
+    /* ── KODE PICKER POPUP ── */
+    #kode-picker-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 9999;
+      align-items: center; justify-content: center;
+    }
+    #kode-picker-overlay.show { display: flex; }
+    #kode-picker-box {
+      background: linear-gradient(160deg,#f0f6ff,#e8f0fe);
+      border: 3px solid var(--clr-primary);
+      border-radius: 12px;
+      box-shadow: 0 8px 0 #0f1f5a, 0 12px 32px rgba(0,0,0,0.4);
+      padding: 0;
+      width: min(94vw, 320px);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    #kode-picker-header {
+      background: linear-gradient(180deg,#2a4fa8,var(--clr-primary));
+      color: #fff; font-weight: 800; font-size: 12px;
+      letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,.3);
+      height: 32px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; padding: 0 36px 0 12px;
+    }
+    #btn-picker-close {
+      position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(180deg,#f87171,#dc2626);
+      color: #fff; border: none; font-size: 11px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 2px 0 #991b1b;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #btn-picker-close:hover  { filter: brightness(1.15); }
+    #btn-picker-close:active { transform: translateY(calc(-50% + 2px)); }
+    #kode-picker-nama {
+      font-size: 10px; font-weight: 700; color: #64748b;
+      text-align: center; padding: 5px 10px 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #kode-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px; padding: 8px 10px 10px;
+    }
+    .picker-group-label {
+      grid-column: 1 / -1;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.8px;
+      padding: 2px 0 1px; text-transform: uppercase;
+      border-bottom: 1.5px solid currentColor; margin-bottom: 0;
+    }
+    .picker-group-label.ns   { color: #a16207; }
+    .picker-group-label.umum { color: #059669; }
+    .picker-group-label.xns  { color: #5b21b6; }
+    .picker-group-label.plr  { color: #c2410c; }
+    .picker-btn {
+      border-radius: 7px; border: 2px solid;
+      font-family: inherit; font-weight: 900;
+      cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 5px 2px 4px; gap: 1px;
+      transition: filter .1s, transform .1s;
+      line-height: 1;
+    }
+    .picker-btn:hover  { filter: brightness(.92); }
+    .picker-btn:active { transform: scale(.94); }
+    .picker-btn .pk    { font-size: 16px; }
+    .picker-btn .pb    { font-size: 7px; font-weight: 700; opacity: .8; }
+    .picker-btn.ns   { background:#fef9c3; color:#713f12; border-color:#a16207; box-shadow:0 3px 0 #a16207; }
+    .picker-btn.umum { background:#d1fae5; color:#065f46; border-color:#059669; box-shadow:0 3px 0 #059669; }
+    .picker-btn.xns  { background:#ede9fe; color:#4c1d95; border-color:#5b21b6; box-shadow:0 3px 0 #5b21b6; }
+    .picker-btn.plr  { background:#ffedd5; color:#7c2d12; border-color:#c2410c; box-shadow:0 3px 0 #c2410c; }
+    .picker-btn.selected { outline: 3px solid #1d4ed8; outline-offset: 1px; }
+    .picker-btn-clear {
+      grid-column: 1 / -1;
+      border-radius: 6px; border: 1.5px dashed #94a3b8;
+      background: #f1f5f9; color: #64748b;
+      font-family: inherit; font-size: 10px; font-weight: 700;
+      cursor: pointer; padding: 5px; margin-top: 2px;
+      transition: filter .1s;
+    }
+    .picker-btn-clear:hover { filter: brightness(.93); }
+
+    /* ── tombol simpan panel 2 ── */
+      width: 100%;
+      height: 32px;
+      background: linear-gradient(180deg, #3b82f6 0%, var(--clr-blue) 100%);
+      box-shadow: 0 4px 0 #1a3fa0, 0 6px 12px rgba(37,99,235,.3);
+      font-size: clamp(10px, 2.5vw, 12px);
+      flex-shrink: 0;
+    }
+    #btn-gen-simpan:active { box-shadow: 0 2px 0 #1a3fa0; }
+
+    /* ── ADMIN EDIT KODE di halaman Seting — badge yang bisa diklik ── */
+    .kode-badge-edit {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%;
+      font-weight: 900; font-size: var(--tbl-fs, 0.82em);
+      border-radius: 5px; cursor: pointer;
+      border: 2px solid; box-sizing: border-box;
+      transition: filter .1s, transform .08s;
+      user-select: none;
+      position: relative;
+    }
+    .kode-badge-edit::after {
+      content: '▾';
+      position: absolute;
+      right: 2px;
+      font-size: 0.65em;
+      opacity: 0.6;
+    }
+    .kode-badge-edit:hover  { filter: brightness(0.9); }
+    .kode-badge-edit:active { transform: scale(.95); }
+    .kode-badge-edit.kode-ns   { background:#fef9c3; color:#713f12; border-color:#a16207; box-shadow:0 3px 0 #a16207; }
+    .kode-badge-edit.kode-umum { background:#d1fae5; color:#065f46; border-color:#059669; box-shadow:0 3px 0 #059669; }
+    .kode-badge-edit.kode-xns  { background:#ede9fe; color:#4c1d95; border-color:#5b21b6; box-shadow:0 3px 0 #5b21b6; }
+    .kode-badge-edit.kode-plr  { background:#ffedd5; color:#7c2d12; border-color:#c2410c; box-shadow:0 3px 0 #c2410c; }
+    .kode-badge-edit.kode-nil { background:#f1f5f9; color:#64748b; border-color:#94a3b8; box-shadow:0 3px 0 #94a3b8; border-style:dashed; }
+
+    /* bar simpan di halaman seting mode admin */
+    #seting-save-bar {
+      display: none;
+      flex-shrink: 0;
+      margin-top: 6px;
+      gap: 6px;
+      align-items: center;
+    }
+    #seting-save-bar.visible { display: flex; }
+    #btn-seting-simpan {
+      flex: 1;
+      height: 32px;
+      background: linear-gradient(180deg, #3b82f6 0%, var(--clr-blue) 100%);
+      box-shadow: 0 4px 0 #1a3fa0;
+      font-size: clamp(10px, 2.5vw, 13px);
+    }
+    #btn-seting-simpan:active { box-shadow: 0 2px 0 #1a3fa0; }
+    #seting-save-status {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--clr-primary);
+      white-space: nowrap;
+    }
+
+
+    /* bar simpan di halaman pola mode admin */
+    #pola-save-bar {
+      display: none; flex-shrink: 0;
+      margin-top: 6px; gap: 6px; align-items: center;
+    }
+    #pola-save-bar.visible { display: flex; }
+    #btn-pola-simpan {
+      flex: 1; height: 32px;
+      background: linear-gradient(180deg, #3b82f6 0%, var(--clr-blue) 100%);
+      box-shadow: 0 4px 0 #1a3fa0;
+      font-size: clamp(10px, 2.5vw, 13px);
+    }
+    #btn-pola-simpan:active { box-shadow: 0 2px 0 #1a3fa0; }
+    #pola-save-status {
+      font-size: 10px; font-weight: 700;
+      color: var(--clr-primary); white-space: nowrap;
+    }
+
+    /* Cell shift editable di tabel pola */
+    .shift-cell-edit {
+      cursor: pointer; user-select: none;
+      border-radius: 4px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%; box-sizing: border-box;
+      border: 2px dashed #94a3b8;
+      transition: filter .1s, transform .08s;
+      position: relative;
+    }
+    .shift-cell-edit::after {
+      content: '▾'; position: absolute; right: 1px; bottom: 0;
+      font-size: 0.6em; opacity: 0.5;
+    }
+    .shift-cell-edit:hover  { filter: brightness(0.88); }
+    .shift-cell-edit:active { transform: scale(.94); }
+    .shift-cell-edit.val-p   { background:#bfdbfe; color:#1e3a8a; border-color:#3b82f6; }
+    .shift-cell-edit.val-sm  { background:#fef08a; color:#713f12; border-color:#a16207; }
+    .shift-cell-edit.val-off { background:#f1f5f9; color:#94a3b8; border-color:#cbd5e1; }
+    .shift-cell-edit.val-kosong { background:#fff;  color:#cbd5e1; border-color:#e2e8f0; border-style:dashed; }
+
+    /* ── SHIFT PICKER MODAL ── */
+    #shift-picker-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 9500;
+      align-items: center; justify-content: center;
+    }
+    #shift-picker-overlay.show { display: flex; }
+    #shift-picker-box {
+      background: linear-gradient(160deg,#f0f6ff 0%,#e8f0fe 100%);
+      border: 3px solid var(--clr-primary);
+      border-radius: 12px;
+      box-shadow: 0 6px 0 #0f1f5a, 0 10px 30px rgba(0,0,0,0.4);
+      width: min(88vw, 280px);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    #shift-picker-header {
+      background: linear-gradient(180deg,#2a4fa8 0%,var(--clr-primary) 100%);
+      color: #fff; font-weight: 800;
+      font-size: clamp(10px,2.5vw,13px); letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.3);
+      padding: 0 38px 0 12px; height: 34px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    #btn-shift-picker-close {
+      position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+      width: 24px; height: 24px; border-radius: 50%;
+      background: linear-gradient(180deg,#f87171 0%,#dc2626 100%);
+      color: #fff; border: none; font-size: 12px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 2px 0 #991b1b;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #btn-shift-picker-close:active { transform: translateY(calc(-50% + 2px)); }
+    #shift-picker-label {
+      font-size: 10px; font-weight: 700; color: #64748b;
+      padding: 6px 12px 2px; letter-spacing: 0.3px; flex-shrink: 0;
+    }
+    #shift-picker-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; padding: 8px 12px 12px;
+    }
+    .shift-pick-btn {
+      height: 44px; border: 2px solid; border-radius: 8px;
+      font-family: inherit; font-weight: 900;
+      font-size: clamp(11px,3vw,14px); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: filter .1s; letter-spacing: 0.5px;
+    }
+    .shift-pick-btn:hover  { filter: brightness(0.9); }
+    .shift-pick-btn:active { transform: translateY(2px); }
+    .shift-pick-btn.pick-p      { background:#bfdbfe; color:#1e3a8a; border-color:#3b82f6; box-shadow:0 3px 0 #1d4ed8; }
+    .shift-pick-btn.pick-sm     { background:#fef08a; color:#713f12; border-color:#a16207; box-shadow:0 3px 0 #92400e; }
+    .shift-pick-btn.pick-off    { background:#f1f5f9; color:#475569; border-color:#94a3b8; box-shadow:0 3px 0 #64748b; }
+    .shift-pick-btn.pick-kosong { background:#fff;    color:#94a3b8; border-color:#e2e8f0; border-style:dashed; box-shadow:none; grid-column:1/-1; }
+
     /* ── FOOTER ── */
     footer {
       height: var(--h-footer);
@@ -520,6 +1390,7 @@
 <body>
   <header>
     <h1>0048</h1>
+    <button id="btn-edit-header" onclick="toggleAdmin()">🔒 ADMIN</button>
   </header>
   <main>
     <div class="menu-bar">
@@ -558,6 +1429,10 @@
             <tbody id="tbody-personil"></tbody>
           </table>
         </div>
+        <div id="seting-save-bar">
+          <button id="btn-seting-simpan" class="btn-3d" onclick="doSetingSimpan()">💾 SIMPAN KODE</button>
+          <span id="seting-save-status"></span>
+        </div>
       </div>
 
       <div class="page" id="pola">
@@ -591,8 +1466,26 @@
             <tbody id="tbody-pola"></tbody>
           </table>
         </div>
+        <div id="pola-save-bar">
+          <button id="btn-pola-simpan" class="btn-3d" onclick="doPolaSimpan()">💾 SIMPAN SHIFT</button>
+          <span id="pola-save-status"></span>
+        </div>
       </div>
-      <div class="page" id="jadwal">Halaman JADWAL</div>
+      <div class="page" id="jadwal">
+        <div class="jadwal-ctrl-bar">
+          <select id="select-jadwal-bulan" onchange="onJadwalBulanChange()">
+            <option value="">— Pilih Bulan —</option>
+          </select>
+          <button id="btn-load-jadwal" class="btn-3d" onclick="loadJadwal()" style="display:none;">LOAD</button>
+        </div>
+        <div id="info-jadwal"></div>
+        <div id="jadwal-table-wrapper">
+          <table id="tabel-jadwal">
+            <thead id="jadwal-thead"></thead>
+            <tbody id="tbody-jadwal"></tbody>
+          </table>
+        </div>
+      </div>
 
     </div>
   </main>
@@ -601,6 +1494,15 @@
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydZBaKTP8dg949an-aOIs1Qnn9c2vT3x2RRkLGkSSndJxdgOxVRI2G1bGfwSd9S--a/exec';
+
+    // ── LOADING BLOCKER HELPER ──
+    function showLoading(teks) {
+      document.querySelector('#loading-blocker .loading-text').textContent = teks || 'MEMUAT...';
+      document.getElementById('loading-blocker').classList.add('show');
+    }
+    function hideLoading() {
+      document.getElementById('loading-blocker').classList.remove('show');
+    }
 
     const NAMA_BULAN = ['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI',
                         'JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
@@ -617,24 +1519,37 @@
       document.querySelectorAll('.menu-bar button').forEach(b => b.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       btn.classList.add('active');
-      if (id === 'pola' && !_polaLoaded.done) {
-        _polaLoaded.done = true;
-        loadPola();
+      if (id === 'pola') {
+        if (!_polaLoaded.done) {
+          _polaLoaded.done = true;
+          loadPola();
+        } else {
+          // Sinkronisasi visibility save bar dengan status admin
+          const saveBar = document.getElementById('pola-save-bar');
+          if (_isAdmin && document.getElementById('pola-wrapper').classList.contains('visible')) {
+            saveBar.classList.add('visible');
+          } else {
+            saveBar.classList.remove('visible');
+          }
+        }
       }
+      if (id === 'jadwal') syncJadwalSelect();
     }
 
     // 3D press ripple on menu buttons
-    document.querySelectorAll && document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.menu-bar button').forEach(btn => {
         btn.addEventListener('mousedown', () => btn.style.top = '3px');
         btn.addEventListener('mouseup',   () => btn.style.top = '');
         btn.addEventListener('mouseleave',() => btn.style.top = '');
       });
+      loadSheets();
     });
 
     async function loadSheets() {
       const sel = document.getElementById('select-bulan');
       sel.innerHTML = '<option value="">— Memuat... —</option>';
+      showLoading('MEMUAT SHEET...');
       try {
         const res  = await fetch(`${APPS_SCRIPT_URL}?action=getSheets`, { redirect: 'follow' });
         const json = await res.json();
@@ -652,6 +1567,8 @@
       } catch (err) {
         sel.innerHTML = '<option value="">— Gagal memuat —</option>';
         showToast('❌ Gagal memuat sheet: ' + err.message, 'err', 8000);
+      } finally {
+        hideLoading();
       }
     }
 
@@ -681,25 +1598,262 @@
       showToast(msg, type, dur);
     }
 
-    async function generateJadwal() {
-      const btn = document.getElementById('btn-generate');
+    const NAMA_BULAN_FULL = ['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI',
+                             'JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
+
+    // Peta kode → info warna & label buff (diisi saat loadPola, dipakai di modal)
+    const _kodeInfo = {};
+
+    // ── BUKA MODAL ──
+    function generateJadwal() {
+      const tahunNow = new Date().getFullYear();
+      document.getElementById('gen-tahun').value = tahunNow;
+      document.getElementById('gen-bulan').value = new Date().getMonth() + 1;
+      setGenStatus(1, '', '');
+      document.getElementById('btn-gen-step1').disabled = false;
+      document.getElementById('btn-gen-step1').textContent = 'GENERATE SHEET →';
+      // reset ke panel 1
+      goGenPanel(1);
+      document.getElementById('generate-overlay').classList.add('show');
+    }
+
+    function closeGenerateModal() {
+      document.getElementById('generate-overlay').classList.remove('show');
+    }
+
+    function goGenPanel(n) {
+      document.getElementById('gen-panel-1').style.display = n === 1 ? 'flex' : 'none';
+      document.getElementById('gen-panel-2').style.display = n === 2 ? 'flex' : 'none';
+      // step dots
+      ['1','2'].forEach(i => {
+        const dot   = document.getElementById('gsd-' + i);
+        const label = document.getElementById('gsl-label-' + i);
+        const ni    = parseInt(i);
+        dot.className   = 'gen-step-dot' + (ni < n ? ' done' : ni === n ? ' active' : '');
+        dot.textContent = ni < n ? '✓' : i;
+        label.className = 'gen-step-label' + (ni < n ? ' done' : ni === n ? ' active' : '');
+      });
+      // line
+      document.getElementById('gsl-1').className = 'gen-step-line' + (n > 1 ? ' done' : '');
+      // header title
+      document.getElementById('gen-header-title').textContent =
+        n === 1 ? '＋ BUAT JADWAL BARU' : 'ATUR KODE PERSONIL';
+    }
+
+    function setGenStatus(panel, msg, color) {
+      const el = document.getElementById('gen-status-' + panel);
+      el.textContent = msg;
+      el.style.color = color || '#1e3a8a';
+    }
+
+    // ── STEP 1: Generate sheet ──
+    async function doGenStep1() {
+      const bulan = parseInt(document.getElementById('gen-bulan').value);
+      const tahun = parseInt(document.getElementById('gen-tahun').value);
+
+      if (isNaN(bulan) || bulan < 1 || bulan > 12) {
+        setGenStatus(1, '❌ Pilih bulan yang valid', '#dc2626'); return;
+      }
+      if (isNaN(tahun) || tahun < 2024 || tahun > 2099) {
+        setGenStatus(1, '❌ Masukkan tahun yang valid (2024–2099)', '#dc2626'); return;
+      }
+
+      const namaSheet = NAMA_BULAN_FULL[bulan - 1] + ' ' + tahun;
+      const btn = document.getElementById('btn-gen-step1');
       btn.disabled = true;
-      setInfoGenerate('⏳ Mengirim permintaan generate...', 'loading');
+      btn.textContent = '⏳ Memproses...';
+      setGenStatus(1, '⏳ Membuat sheet "' + namaSheet + '"...', '#1e3a8a');
 
       try {
         const res  = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          redirect: 'follow',
+          method: 'POST', redirect: 'follow',
           body: JSON.stringify({ action: 'generateJadwal', sheet: namaSheet })
         });
         const json = await res.json();
-        if (json.status !== 'ok') throw new Error(json.message);
-        setInfoGenerate('✅ ' + json.message, 'ok');
-        loadSheets(); // refresh dropdown setelah generate
+
+        // Jika sheet sudah ada, anggap sukses dan lanjut ke step 2
+        const sudahAda = json.status !== 'ok' && json.message &&
+          (json.message.toLowerCase().includes('sudah ada') ||
+           json.message.toLowerCase().includes('already exist') ||
+           json.message.toLowerCase().includes('duplicate') ||
+           json.message.toLowerCase().includes('exist'));
+
+        if (json.status !== 'ok' && !sudahAda) throw new Error(json.message);
+
+        if (sudahAda) {
+          setGenStatus(1, '⚠ Sheet sudah ada, lanjut atur personil...', '#d97706');
+        } else {
+          setGenStatus(1, '✅ Sheet berhasil dibuat!', '#16a34a');
+          loadSheets(); // refresh dropdown di halaman utama
+        }
+
+        // Lanjut ke step 2
+        await loadGenStep2(namaSheet);
+
       } catch (err) {
-        setInfoGenerate('❌ Gagal: ' + err.message, 'err');
-      } finally {
+        setGenStatus(1, '❌ ' + err.message, '#dc2626');
         btn.disabled = false;
+        btn.textContent = 'GENERATE SHEET →';
+      }
+    }
+
+    // ── STEP 2: Tampil daftar personil + pilih kode ──
+    async function loadGenStep2(namaSheet) {
+      _genNamaSheet = namaSheet;
+      // reset tombol simpan
+      const btnSimpan = document.getElementById('btn-gen-simpan');
+      btnSimpan.disabled = false;
+      btnSimpan.textContent = '💾 SIMPAN KODE PERSONIL';
+      goGenPanel(2);
+      document.getElementById('gen-personil-title').textContent = '— Memuat data dari "' + namaSheet + '"...';
+      document.getElementById('gen-tbody-personil').innerHTML = '<tr><td colspan="3" style="text-align:center;padding:12px;color:#64748b;">⏳ Memuat...</td></tr>';
+      setGenStatus(2, '', '');
+
+      try {
+        // KODE selalu di AM karena sheet di-copy dari TEMPLATE
+        const [resNama, resKode, resPola] = await Promise.all([
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=F6:F15`, { redirect: 'follow' }),
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=AM6:AM15`, { redirect: 'follow' }),
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent('POLA SHIFT')}&range=B2:J12`, { redirect: 'follow' })
+        ]);
+        const [jNama, jKode, jPola] = await Promise.all([resNama.json(), resKode.json(), resPola.json()]);
+
+        if (jNama.status !== 'ok') throw new Error(jNama.message);
+        if (jKode.status !== 'ok') throw new Error(jKode.message);
+        if (jPola.status !== 'ok') throw new Error(jPola.message);
+
+        // ── Parse POLA SHIFT ──
+        // data[0] = header row B2: ['','NO','KODE','BUFF','SEN','SEL','RAB','KAM','JUM','NILAI']
+        // data[1..] = data: ['','1','A','NON SHIFT','P','P','OFF','P','P','4']
+        const polaRows = jPola.data.slice(1);
+        const polaKodeMap = {};
+        const HARI_KEY = ['SEN','SEL','RAB','KAM','JUM'];
+        polaRows.forEach(row => {
+          const kode = (row[1] || '').toString().trim().toUpperCase();
+          const buff = (row[2] || '').toString().trim();
+          if (!kode) return;
+          const hari = {};
+          HARI_KEY.forEach((h, hi) => { hari[h] = (row[3 + hi] || '').toString().trim().toUpperCase(); });
+          polaKodeMap[kode] = { buff, hari };
+        });
+
+        // ── Kelompok & warna ──
+        const KELOMPOK = [
+          { label: 'NS',   kodes: ['A','B'],             prefix: '◆', bg:'#fef9c3', clr:'#713f12', border:'#a16207' },
+          { label: 'UMUM', kodes: ['C','D','E','F'],     prefix: '●', bg:'#d1fae5', clr:'#065f46', border:'#059669' },
+          { label: 'XNS',  kodes: ['G','H'],             prefix: '▲', bg:'#ede9fe', clr:'#4c1d95', border:'#5b21b6' },
+          { label: 'PLR',  kodes: ['I','J'],             prefix: '★', bg:'#ffedd5', clr:'#7c2d12', border:'#c2410c' }
+        ];
+
+        Object.assign(_kodeInfo, polaKodeMap);
+
+        // Bangun helper mkOpts dengan label yang informatif
+        const mkOptsGen = (kodes) => kodes.map(k => {
+          const info = polaKodeMap[k];
+          const buff = info?.buff || '-';
+          return `<option value="${k}" ${(jKode.data[0]?.[0]||'')===k?'selected':''}>${k}  –  ${buff}</option>`;
+        }).join('');
+
+        // ── Bangun tabel personil ──
+        const tbody = document.getElementById('gen-tbody-personil');
+        tbody.innerHTML = '';
+        let ada = false;
+        let noUrut = 0;
+
+        jNama.data.forEach((row, i) => {
+          const nama = (row[0] || '').toString().trim();
+          const kodeAsal = (jKode.data[i]?.[0] || '').toString().trim().toUpperCase();
+          if (!nama) return;
+          ada = true;
+          noUrut++;
+
+          const ku = kodeAsal;
+          const badgeCls = 'kode-badge-edit ' + kodeToClass(ku);
+
+          const tr = document.createElement('tr');
+          tr.dataset.rowIdx = i;
+          tr.innerHTML = `
+            <td>${noUrut}</td>
+            <td title="${nama}">${nama}</td>
+            <td style="padding:0;"><div class="${badgeCls}" data-kode="${ku}" onclick="openKodePickerGen(this, ${i})">${ku || '–'}</div></td>`;
+          tbody.appendChild(tr);
+          applyGenRowColor(tr, kodeAsal);
+        });
+
+        if (!ada) {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:12px;color:#64748b;">⚠ Tidak ada nama personil</td></tr>';
+          setGenStatus(2, '⚠ Nama personil belum diisi di sheet ini.', '#d97706');
+          return;
+        }
+
+        document.getElementById('gen-personil-title').textContent = '📋 ' + namaSheet + ' — ' + noUrut + ' personil';
+        setGenStatus(2, 'Atur kode tiap personil, lalu simpan.', '#1e3a8a');
+
+      } catch (err) {
+        document.getElementById('gen-tbody-personil').innerHTML =
+          `<tr><td colspan="3" style="text-align:center;padding:12px;color:#dc2626;">❌ ${err.message}</td></tr>`;
+        setGenStatus(2, '❌ Gagal memuat: ' + err.message, '#dc2626');
+      }
+    }
+
+    function onGenKodeChange(sel) {
+      const tr = sel.closest('tr');
+      applyGenRowColor(tr, sel.value);
+    }
+
+    function applyGenRowColor(tr, kode) {
+      const clr = kodeColor(kode);
+      tr.querySelectorAll('td').forEach(td => { td.style.background = clr.bg || ''; });
+      tr.style.background = clr.bg || '';
+    }
+
+    // ── SIMPAN KODE DARI MODAL (STEP 2) ──
+    let _genNamaSheet = '';
+    async function doGenSimpan() {
+      const btn = document.getElementById('btn-gen-simpan');
+      const rows = document.querySelectorAll('#gen-tbody-personil tr[data-row-idx]');
+      if (!rows.length) { setGenStatus(2, '⚠ Tidak ada data untuk disimpan.', '#d97706'); return; }
+
+      // Kumpulkan kode per rowIdx → tulis ke AM6:AM15
+      const kodeArr = [];
+      rows.forEach(tr => {
+        const idx   = parseInt(tr.dataset.rowIdx);
+        const badge = tr.querySelector('.kode-badge-edit');
+        const sel   = tr.querySelector('.gen-kode-select');
+        kodeArr[idx] = badge ? (badge.dataset.kode || '') : (sel ? sel.value : '');
+      });
+      // Pastikan array 10 elemen (baris 0–9)
+      const data = [];
+      for (let i = 0; i < 10; i++) {
+        data.push([ kodeArr[i] !== undefined ? kodeArr[i] : '' ]);
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Menyimpan...';
+      setGenStatus(2, '⏳ Menyimpan ke sheet...', '#1e3a8a');
+
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', redirect: 'follow',
+          body: JSON.stringify({
+            action: 'write',
+            sheet:  _genNamaSheet,
+            range:  'AM6:AM15',
+            values: data
+          })
+        });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+
+        setGenStatus(2, '✅ Kode berhasil disimpan!', '#16a34a');
+        btn.textContent = '✅ TERSIMPAN';
+        // Reload tabel seting jika sheet yg sedang dipilih sama
+        const selBulan = document.getElementById('select-bulan').value;
+        if (selBulan === _genNamaSheet) loadPersonil();
+      } catch(err) {
+        setGenStatus(2, '❌ ' + err.message, '#dc2626');
+        btn.disabled = false;
+        btn.textContent = '💾 SIMPAN KODE PERSONIL';
       }
     }
 
@@ -711,65 +1865,315 @@
       document.getElementById('tbody-personil').innerHTML = '';
     }
 
+    // Peta kode options — dibangun dari pola, dipakai di seting admin
+    let _polaKodeMapSeting = {};
+
     async function loadPersonil() {
       const namaSheet = document.getElementById('select-bulan').value;
       if (!namaSheet) return;
 
       const btn = document.getElementById('btn-load-personil');
       btn.disabled = true;
-      showToast('⏳ Memuat personil...', 'loading', 0);
+      showLoading('MEMUAT PERSONIL...');
       document.getElementById('tabel-wrapper').classList.remove('visible');
+      document.getElementById('seting-save-bar').classList.remove('visible');
+      document.getElementById('seting-save-status').textContent = '';
 
       try {
-        // Ambil NAMA (F6:F15) dan KODE (kolom AM6:AM15) dari sheet yang dipilih
         const urlNama = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=F6:F15`;
         const urlKode = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=AM6:AM15`;
+        const urlPola = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent('POLA SHIFT')}&range=B2:J12`;
 
-        const [resNama, resKode] = await Promise.all([
+        const [resNama, resKode, resPola] = await Promise.all([
           fetch(urlNama, { redirect: 'follow' }),
-          fetch(urlKode, { redirect: 'follow' })
+          fetch(urlKode, { redirect: 'follow' }),
+          fetch(urlPola, { redirect: 'follow' })
         ]);
-        const [jsonNama, jsonKode] = await Promise.all([resNama.json(), resKode.json()]);
+        const [jsonNama, jsonKode, jsonPola] = await Promise.all([resNama.json(), resKode.json(), resPola.json()]);
 
         if (jsonNama.status !== 'ok') throw new Error(jsonNama.message);
         if (jsonKode.status !== 'ok') throw new Error(jsonKode.message);
 
+        // Parse pola untuk opsi kode (jika berhasil)
+        _polaKodeMapSeting = {};
+        if (jsonPola.status === 'ok') {
+          jsonPola.data.slice(1).forEach(row => {
+            const kode = (row[1] || '').toString().trim().toUpperCase();
+            const buff = (row[2] || '').toString().trim();
+            if (kode) _polaKodeMapSeting[kode] = buff;
+          });
+        }
+
         const tbody = document.getElementById('tbody-personil');
         tbody.innerHTML = '';
         let ada = false;
+
         jsonNama.data.forEach((row, i) => {
           const nama = (row[0] || '').toString().trim();
           const kode = (jsonKode.data[i]?.[0] || '').toString().trim();
           if (!nama) return;
           ada = true;
           const clr = kodeColor(kode);
-          const rowBg  = `background:${clr.bg};`;
-          const btnStyle = `background:${clr.btnBg};color:${clr.text};border:2px solid ${clr.shadow};box-shadow:0 4px 0 ${clr.shadow};text-shadow:0 1px 1px rgba(0,0,0,0.15);border-radius:6px;padding:2px 4px;font-weight:800;font-size:var(--tbl-fs,0.82em);cursor:default;display:flex;align-items:center;justify-content:center;width:100%;height:100%;box-sizing:border-box;overflow:hidden;white-space:nowrap;`;
-          tbody.innerHTML += `<tr style="${rowBg}">
+          const rowBg = `background:${clr.bg};`;
+
+          let kodeTd = '';
+          if (_isAdmin && Object.keys(_polaKodeMapSeting).length > 0) {
+            // Mode admin: badge kode yang bisa diklik untuk buka modal picker
+            const ku = (kode||'').toUpperCase();
+            const badgeCls = 'kode-badge-edit ' + kodeToClass(ku);
+            kodeTd = `<td style="${rowBg}padding:0;" data-row="${i}">
+              <div class="${badgeCls}" data-kode="${ku}" onclick="openKodePickerSeting(this, ${i})">${ku || '–'}</div>
+            </td>`;
+          } else {
+            // Mode biasa: tampil badge
+            const btnStyle = `background:${clr.btnBg};color:${clr.text};border:2px solid ${clr.shadow};box-shadow:0 4px 0 ${clr.shadow};text-shadow:0 1px 1px rgba(0,0,0,0.15);border-radius:6px;padding:2px 4px;font-weight:800;font-size:var(--tbl-fs,0.82em);cursor:default;display:flex;align-items:center;justify-content:center;width:100%;height:100%;box-sizing:border-box;overflow:hidden;white-space:nowrap;`;
+            kodeTd = `<td style="${rowBg}padding:0;">
+              <span style="${btnStyle}">${kode || '-'}</span>
+            </td>`;
+          }
+
+          tbody.innerHTML += `<tr style="${rowBg}" data-row-idx="${i}">
             <td style="${rowBg}">${i + 1}</td>
             <td style="${rowBg}">${nama}</td>
-            <td style="${rowBg}padding:0;">
-              <span style="${btnStyle}">${kode || '-'}</span>
-            </td>
+            ${kodeTd}
           </tr>`;
         });
 
         hideToast();
         const wrapper = document.getElementById('tabel-wrapper');
-        if (ada) { wrapper.classList.add('visible'); fitTabel(); }
-        else { wrapper.classList.remove('visible'); showToast('⚠ Tidak ada data personil di sheet ini.', 'err', 5000); }
+        if (ada) {
+          wrapper.classList.add('visible');
+          if (_isAdmin) document.getElementById('seting-save-bar').classList.add('visible');
+          fitTabel();
+        } else {
+          wrapper.classList.remove('visible');
+          showToast('⚠ Tidak ada data personil di sheet ini.', 'err', 5000);
+        }
       } catch (err) {
         showToast('❌ Gagal memuat: ' + err.message, 'err', 5000);
+      } finally {
+        btn.disabled = false;
+        hideLoading();
+      }
+    }
+
+    // ── KODE PICKER MODAL (dipakai oleh seting admin & gen step-2) ──
+    let _pickerTargetBadge = null;   // elemen badge yang sedang diedit
+    let _pickerContext     = '';     // 'seting' | 'gen'
+
+    function _buildKodePickerGrid(currentKode) {
+      const grid = document.getElementById('kode-picker-grid');
+      grid.innerHTML = '';
+
+      const KELOMPOK = [
+        { label: '◆ NS',   cls: 'ns',   kodes: [] },
+        { label: '● UMUM', cls: 'umum', kodes: [] },
+        { label: '▲ XNS',  cls: 'xns',  kodes: [] },
+        { label: '★ PLR',  cls: 'plr',  kodes: [] }
+      ];
+      const clsToGrp = { 'kode-ns':'ns', 'kode-umum':'umum', 'kode-xns':'xns', 'kode-plr':'plr' };
+      ['A','B','C','D','E','F','G','H','I','J'].forEach(k => {
+        const grpCls = clsToGrp[kodeToClass(k)];
+        const grp = KELOMPOK.find(g => g.cls === grpCls);
+        if (grp) grp.kodes.push(k);
+      });
+
+      const polaMap = Object.keys(_polaKodeMapSeting).length ? _polaKodeMapSeting : _kodeInfo;
+
+      KELOMPOK.forEach(grp => {
+        const lbl = document.createElement('div');
+        lbl.className = 'picker-group-label ' + grp.cls;
+        lbl.textContent = grp.label;
+        grid.appendChild(lbl);
+
+        grp.kodes.forEach(k => {
+          const info = polaMap[k];
+          const buff = (typeof info === 'object' ? info?.buff : info) || '-';
+          const btn  = document.createElement('button');
+          btn.className = 'picker-btn ' + grp.cls + (k === currentKode ? ' selected' : '');
+          btn.innerHTML = `<span class="pk">${k}</span><span class="pb">${buff}</span>`;
+          btn.onclick = () => _pickerSelectKode(k);
+          grid.appendChild(btn);
+        });
+      });
+
+      // Tombol hapus / kosongkan
+      const clearBtn = document.createElement('button');
+      clearBtn.className = 'picker-btn-clear';
+      clearBtn.textContent = '✕ Kosongkan kode';
+      clearBtn.onclick = () => _pickerSelectKode('');
+      grid.appendChild(clearBtn);
+    }
+
+    function openKodePickerSeting(badge, rowIdx) {
+      if (!_isAdmin) return;
+      _pickerTargetBadge = badge;
+      _pickerContext     = 'seting';
+      const nama = badge.closest('tr').querySelector('td:nth-child(2)')?.textContent || '';
+      document.getElementById('kode-picker-nama').textContent = nama;
+      document.getElementById('kode-picker-header-title').textContent = 'PILIH KODE PERSONIL';
+      _buildKodePickerGrid((badge.dataset.kode || '').toUpperCase());
+      document.getElementById('kode-picker-overlay').classList.add('show');
+    }
+
+    function openKodePickerGen(badge, rowIdx) {
+      _pickerTargetBadge = badge;
+      _pickerContext     = 'gen';
+      const nama = badge.closest('tr').querySelector('td:nth-child(2)')?.textContent || '';
+      document.getElementById('kode-picker-nama').textContent = nama;
+      document.getElementById('kode-picker-header-title').textContent = 'PILIH KODE PERSONIL';
+      _buildKodePickerGrid((badge.dataset.kode || '').toUpperCase());
+      document.getElementById('kode-picker-overlay').classList.add('show');
+    }
+
+    function _pickerSelectKode(kode) {
+      if (!_pickerTargetBadge) return;
+      const ku = kode.toUpperCase();
+      const badge = _pickerTargetBadge;
+
+      // Update data-kode & teks
+      badge.dataset.kode = ku;
+      badge.textContent  = ku || '–';
+
+      // Update class warna badge
+      badge.className = 'kode-badge-edit ' + kodeToClass(ku);
+
+      // Warna baris
+      const tr = badge.closest('tr');
+      const clr = kodeColor(ku);
+      tr.querySelectorAll('td').forEach(td => { td.style.background = clr.bg || ''; });
+      tr.style.background = clr.bg || '';
+
+      if (_pickerContext === 'seting') {
+        document.getElementById('seting-save-status').textContent = '';
+      }
+
+      document.getElementById('kode-picker-overlay').classList.remove('show');
+      _pickerTargetBadge = null;
+    }
+
+    function closeKodePicker() {
+      document.getElementById('kode-picker-overlay').classList.remove('show');
+      _pickerTargetBadge = null;
+    }
+
+    // ── Aktifkan / nonaktifkan mode edit badge tanpa reload ──
+    function _activateAdminBadges() {
+      // Pastikan pola map tersedia; jika belum, load dulu
+      if (Object.keys(_polaKodeMapSeting).length === 0) {
+        loadPersonil(); return;
+      }
+      document.getElementById('seting-save-bar').classList.add('visible');
+      document.querySelectorAll('#tbody-personil tr[data-row-idx]').forEach(tr => {
+        const i = parseInt(tr.dataset.rowIdx);
+        const kodeTd = tr.querySelector('td:last-child');
+        if (!kodeTd) return;
+        // Ambil kode dari span biasa
+        const span = kodeTd.querySelector('span');
+        const ku   = span ? span.textContent.trim().replace('–','').replace('-','').trim() : '';
+        const badgeCls = 'kode-badge-edit ' + kodeToClass(ku);
+        kodeTd.style.padding = '0';
+        kodeTd.innerHTML = `<div class="${badgeCls}" data-kode="${ku}" onclick="openKodePickerSeting(this, ${i})">${ku || '–'}</div>`;
+      });
+      fitTabel();
+    }
+
+    function _deactivateAdminBadges() {
+      document.querySelectorAll('#tbody-personil tr[data-row-idx]').forEach(tr => {
+        const kodeTd = tr.querySelector('td:last-child');
+        if (!kodeTd) return;
+        const badge = kodeTd.querySelector('.kode-badge-edit');
+        const ku    = badge ? (badge.dataset.kode || '') : '';
+        const clr   = kodeColor(ku);
+        const btnStyle = `background:${clr.btnBg};color:${clr.text};border:2px solid ${clr.shadow};box-shadow:0 4px 0 ${clr.shadow};text-shadow:0 1px 1px rgba(0,0,0,0.15);border-radius:6px;padding:2px 4px;font-weight:800;font-size:var(--tbl-fs,0.82em);cursor:default;display:flex;align-items:center;justify-content:center;width:100%;height:100%;box-sizing:border-box;overflow:hidden;white-space:nowrap;`;
+        kodeTd.style.padding = '0';
+        kodeTd.innerHTML = `<span style="${btnStyle}">${ku || '-'}</span>`;
+      });
+      fitTabel();
+    }
+
+    // ── SIMPAN KODE DARI HALAMAN SETING (MODE ADMIN) ──
+    async function doSetingSimpan() {
+      const namaSheet = document.getElementById('select-bulan').value;
+      if (!namaSheet) return;
+
+      const rows = document.querySelectorAll('#tbody-personil tr[data-row-idx]');
+      if (!rows.length) return;
+
+      // Siapkan array 10 baris default kosong
+      const data = Array.from({length: 10}, () => ['']);
+      rows.forEach(tr => {
+        const idx   = parseInt(tr.dataset.rowIdx);
+        if (idx < 0 || idx > 9) return;
+        // Coba baca dari badge edit dulu, fallback ke span biasa
+        const badge = tr.querySelector('.kode-badge-edit');
+        const span  = tr.querySelector('td:last-child span');
+        let val = '';
+        if (badge) {
+          val = (badge.dataset.kode || '').toString().trim();
+        } else if (span) {
+          val = span.textContent.replace('–','').replace('-','').trim();
+        }
+        data[idx] = [val];
+      });
+
+      const btn = document.getElementById('btn-seting-simpan');
+      const status = document.getElementById('seting-save-status');
+      btn.disabled = true;
+      btn.textContent = '⏳ Menyimpan...';
+      status.textContent = '';
+
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', redirect: 'follow',
+          body: JSON.stringify({ action: 'write', sheet: namaSheet, range: 'AM6:AM15', values: data })
+        });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+        status.style.color = '#16a34a';
+        status.textContent = '✅ Tersimpan!';
+        btn.textContent = '💾 SIMPAN KODE';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      } catch(err) {
+        status.style.color = '#dc2626';
+        status.textContent = '❌ ' + err.message;
+        btn.textContent = '💾 SIMPAN KODE';
       } finally {
         btn.disabled = false;
       }
     }
 
-    function kodeColor(kode) {
+    // Tentukan class berdasarkan buff label dari POLA SHIFT
+    function buffToKodeClass(buff) {
+      const b = singkatBuff((buff || '').toString().trim());
+      if (b === 'NS')   return 'kode-ns';
+      if (b === 'UMUM') return 'kode-umum';
+      if (b === 'XNS')  return 'kode-xns';
+      if (b === 'PLR')  return 'kode-plr';
+      return 'kode-nil';
+    }
+
+    // Cari buff dari kode, lalu kembalikan class warna
+    function kodeToClass(kode) {
       const k = (kode || '').toString().trim().toUpperCase();
-      if (k === 'A' || k === 'B') return { bg:'#fef08a', btnBg:'#fef9c3', shadow:'#a16207', text:'#713f12' };
-      if (k === 'G' || k === 'H') return { bg:'#ddd6fe', btnBg:'#ede9fe', shadow:'#5b21b6', text:'#4c1d95' };
-      if (k === 'I' || k === 'J') return { bg:'#fed7aa', btnBg:'#ffedd5', shadow:'#c2410c', text:'#7c2d12' };
+      const polaMap = Object.keys(_polaKodeMapSeting).length ? _polaKodeMapSeting : _kodeInfo;
+      const info = polaMap[k];
+      const buff = typeof info === 'object' ? info?.buff : info;
+      if (buff) return buffToKodeClass(buff);
+      // Fallback hardcode jika pola belum termuat
+      if (['A','B'].includes(k))                      return 'kode-ns';
+      if (['C','D','E','F'].includes(k))              return 'kode-umum';
+      if (['G','H'].includes(k))                      return 'kode-xns';
+      if (['I','J'].includes(k))                      return 'kode-plr';
+      return 'kode-nil';
+    }
+
+    function kodeColor(kode) {
+      const cls = kodeToClass(kode);
+      if (cls === 'kode-ns')   return { bg:'#fef08a', btnBg:'#fef9c3', shadow:'#a16207', text:'#713f12' };
+      if (cls === 'kode-umum') return { bg:'#a7f3d0', btnBg:'#d1fae5', shadow:'#059669', text:'#065f46' };
+      if (cls === 'kode-xns')  return { bg:'#ddd6fe', btnBg:'#ede9fe', shadow:'#5b21b6', text:'#4c1d95' };
+      if (cls === 'kode-plr')  return { bg:'#fed7aa', btnBg:'#ffedd5', shadow:'#c2410c', text:'#7c2d12' };
       return { bg:'#e2e8f0', btnBg:'#f1f5f9', shadow:'#475569', text:'#1e293b' };
     }
 
@@ -778,19 +2182,20 @@
         const page    = document.getElementById('seting');
         const bar     = page.querySelector('.seting-bulan-bar');
         const wrapper = document.getElementById('tabel-wrapper');
+        const saveBar = document.getElementById('seting-save-bar');
         const tabel   = document.getElementById('tabel-personil');
         const rows    = tabel.querySelectorAll('tr');
         if (!rows.length) return;
 
-        const padPage = parseFloat(getComputedStyle(page).paddingTop) + parseFloat(getComputedStyle(page).paddingBottom);
-        const gapBar  = parseFloat(getComputedStyle(bar).marginBottom) || 0;
-        const availH  = page.clientHeight - padPage - bar.offsetHeight - gapBar;
+        const padPage  = parseFloat(getComputedStyle(page).paddingTop) + parseFloat(getComputedStyle(page).paddingBottom);
+        const gapBar   = parseFloat(getComputedStyle(bar).marginBottom) || 0;
+        const saveBarH = saveBar.classList.contains('visible') ? (saveBar.offsetHeight + 6) : 0;
+        const availH   = page.clientHeight - padPage - bar.offsetHeight - gapBar - saveBarH;
         if (availH <= 0) return;
 
         wrapper.style.height = availH + 'px';
         wrapper.style.overflow = 'hidden';
 
-        // Kurangi: border wrapper 6px + border tiap baris (2px × jumlah baris)
         const borderTotal = 6 + (rows.length * 2);
         const rowH = Math.floor((availH - borderTotal) / rows.length);
         const fs   = Math.min(14, Math.max(9, Math.floor(rowH * 0.58)));
@@ -803,13 +2208,14 @@
     window.addEventListener('resize', () => {
       if (document.getElementById('tabel-wrapper').classList.contains('visible')) fitTabel();
       if (document.getElementById('pola-wrapper').classList.contains('visible')) fitPolaTable();
+      if (document.getElementById('jadwal-table-wrapper').classList.contains('visible')) fitJadwalTable();
     });
 
     // ── POLA ──
     async function loadPola() {
       const wrapper = document.getElementById('pola-wrapper');
 
-      showToast('⏳ Memuat pola shift...', 'loading', 0);
+      showLoading('MEMUAT POLA SHIFT...');
       wrapper.classList.remove('visible');
 
       try {
@@ -843,20 +2249,21 @@
           let hariTds = '';
           for (let h = 0; h < 5; h++) {
             const val = (row[3 + h] || '').toString().trim().toUpperCase();
-            let cls = '', cellBg = rowBg;
-            if (val === 'P') {
-              cls = 'shift-p';
-              cellBg = 'background:#bfdbfe;';
-            } else if (val === 'SM') {
-              cls = 'shift-sm';
-              cellBg = 'background:#fef08a;';
-            } else if (val === 'OFF') {
-              cls = 'shift-off';
-              cellBg = rowBg;
+            const HARI_NAMA = ['SEN','SEL','RAB','KAM','JUM'];
+            if (_isAdmin) {
+              // Mode admin: cell bisa diklik
+              const vCls = val==='P' ? 'val-p' : val==='SM' ? 'val-sm' : val==='OFF' ? 'val-off' : 'val-kosong';
+              hariTds += `<td style="${rowBg}padding:2px;" data-hari="${h}" data-kode="${kode}">
+                <div class="shift-cell-edit ${vCls}" data-val="${val}" onclick="openShiftPicker(this,'${kode}',${h},'${HARI_NAMA[h]}')">${val||'–'}</div>
+              </td>`;
             } else {
-              cellBg = rowBg;
+              let cls = '', cellBg = rowBg;
+              if (val === 'P')   { cls = 'shift-p';   cellBg = 'background:#bfdbfe;'; }
+              else if (val === 'SM')  { cls = 'shift-sm';  cellBg = 'background:#fef08a;'; }
+              else if (val === 'OFF') { cls = 'shift-off'; cellBg = rowBg; }
+              else { cellBg = rowBg; }
+              hariTds += `<td class="${cls}" style="${cellBg}">${val || ''}</td>`;
             }
-            hariTds += `<td class="${cls}" style="${cellBg}">${val || ''}</td>`;
           }
 
           const nilai = (row[8] || '').toString().trim();
@@ -871,9 +2278,18 @@
         });
 
         hideToast();
-        if (ada) { wrapper.classList.add('visible'); fitPolaTable(); }
-        else { wrapper.classList.remove('visible'); showToast('⚠ Tidak ada data pola.', 'err', 5000); }
+        hideLoading();
+        if (ada) {
+          wrapper.classList.add('visible');
+          if (_isAdmin) document.getElementById('pola-save-bar').classList.add('visible');
+          else          document.getElementById('pola-save-bar').classList.remove('visible');
+          fitPolaTable();
+        } else {
+          wrapper.classList.remove('visible');
+          showToast('⚠ Tidak ada data pola.', 'err', 5000);
+        }
       } catch (err) {
+        hideLoading();
         showToast('❌ Gagal memuat: ' + err.message, 'err', 5000);
       }
     }
@@ -942,26 +2358,585 @@
       requestAnimationFrame(() => {
         const page    = document.getElementById('pola');
         const wrapper = document.getElementById('pola-wrapper');
+        const saveBar = document.getElementById('pola-save-bar');
         const tabel   = document.getElementById('tabel-pola');
         const rows    = tabel.querySelectorAll('tr');
         if (!rows.length) return;
 
-        const padPage = parseFloat(getComputedStyle(page).paddingTop) + parseFloat(getComputedStyle(page).paddingBottom);
-        const availH  = page.clientHeight - padPage;
+        const padPage  = parseFloat(getComputedStyle(page).paddingTop) + parseFloat(getComputedStyle(page).paddingBottom);
+        const saveBarH = saveBar.classList.contains('visible') ? (saveBar.offsetHeight + 6) : 0;
+        const availH   = page.clientHeight - padPage - saveBarH;
 
         if (availH <= 0) return;
         wrapper.style.height = availH + 'px';
 
         const rowH = Math.floor(availH / rows.length);
         wrapper.style.setProperty('--prow-h', Math.max(rowH, 20) + 'px');
-        const fs = Math.min(9, Math.max(5, Math.floor(rowH * 0.28)));
-        wrapper.style.setProperty('--ptbl-fs', fs + 'px');
-        wrapper.style.setProperty('--ptbl-fs-head', '8px');
+        wrapper.style.setProperty('--ptbl-fs', '10px');
+        wrapper.style.setProperty('--ptbl-fs-head', '12px');
       });
     }
 
-    // Auto load dropdown saat halaman dibuka
-    loadSheets();
+    // Auto load dropdown saat halaman dibuka — dipindah ke DOMContentLoaded di atas
+
+    // ══════════════════════════════════════════════════════
+    // ── TAB JADWAL ──
+    // ══════════════════════════════════════════════════════
+
+    function syncJadwalSelect() {
+      const src  = document.getElementById('select-bulan');
+      const dest = document.getElementById('select-jadwal-bulan');
+      const prev = dest.value;
+      dest.innerHTML = '<option value="">— Pilih Bulan —</option>';
+      Array.from(src.options).forEach(opt => {
+        if (!opt.value) return;
+        const o = document.createElement('option');
+        o.value = opt.value;
+        o.textContent = opt.textContent;
+        if (opt.value === prev) o.selected = true;
+        dest.appendChild(o);
+      });
+      onJadwalBulanChange();
+    }
+
+    function onJadwalBulanChange() {
+      const val = document.getElementById('select-jadwal-bulan').value;
+      document.getElementById('btn-load-jadwal').style.display = val ? 'flex' : 'none';
+      document.getElementById('jadwal-table-wrapper').classList.remove('visible');
+      document.getElementById('tbody-jadwal').innerHTML = '';
+      document.getElementById('jadwal-thead').innerHTML = '';
+      document.getElementById('info-jadwal').textContent = '';
+    }
+
+    async function loadJadwal() {
+      const namaSheet = document.getElementById('select-jadwal-bulan').value;
+      if (!namaSheet) return;
+      const btn = document.getElementById('btn-load-jadwal');
+      btn.disabled = true; btn.textContent = '⏳';
+      showLoading('MEMUAT JADWAL...');
+      document.getElementById('jadwal-table-wrapper').classList.remove('visible');
+      document.getElementById('info-jadwal').textContent = '';
+      try {
+        // Baca G1:AM20 untuk temukan baris HARI/TGL, F1:F20 nama, H1:AL20 shift, AM6:AM15 kode
+        const [rG, rF, rH, rK] = await Promise.all([
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=G1:AM20`, {redirect:'follow'}),
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=F1:F20`, {redirect:'follow'}),
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=H1:AL20`, {redirect:'follow'}),
+          fetch(`${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent(namaSheet)}&range=AM6:AM15`, {redirect:'follow'}),
+        ]);
+        const [jG, jF, jH, jK] = await Promise.all([rG.json(), rF.json(), rH.json(), rK.json()]);
+        if (jG.status!=='ok') throw new Error(jG.message);
+        if (jF.status!=='ok') throw new Error(jF.message);
+        if (jH.status!=='ok') throw new Error(jH.message);
+
+        const grid = jG.data, namaGrid = jF.data, shiftGrid = jH.data;
+
+        // Kode personil: AM6:AM15 → array 10 elemen (index 0 = baris ke-6 sheet)
+        const kodePersonil = (jK.status === 'ok' ? jK.data : []).map(r => (r[0]||'').toString().trim().toUpperCase());
+
+        // Cari baris HARI & TGL di kolom G (index 0 grid)
+        let hariRowIdx = -1, tglRowIdx = -1;
+        grid.forEach((row, r) => {
+          const lbl = (row[0]||'').toString().trim().toUpperCase();
+          if (lbl==='HARI') hariRowIdx = r;
+          if (lbl==='TGL')  tglRowIdx  = r;
+        });
+        if (hariRowIdx===-1||tglRowIdx===-1) throw new Error('Baris HARI/TGL tidak ditemukan');
+
+        const hariRow = grid[hariRowIdx], tglRow = grid[tglRowIdx];
+        const hariList = [];
+        for (let i=1; i<hariRow.length; i++) {
+          const hari = (hariRow[i]||'').toString().trim().toUpperCase();
+          const tgl  = Number(tglRow[i]);
+          if (hari && !isNaN(tgl) && tgl>=1) hariList.push({colIdx:i-1, hari, tgl});
+        }
+        if (!hariList.length) throw new Error('Tidak ada kolom hari ditemukan');
+
+        // Kumpulkan karyawan: baris di namaGrid setelah max(hariRowIdx, tglRowIdx)
+        const afterRow = Math.max(hariRowIdx, tglRowIdx) + 1;
+        const namaList = [], empRows = [];
+        for (let r=afterRow; r<namaGrid.length; r++) {
+          const nama = (namaGrid[r][0]||'').toString().trim();
+          if (nama.length > 1) { namaList.push(nama); empRows.push(r); }
+        }
+        if (!namaList.length) throw new Error('Tidak ada karyawan ditemukan');
+
+        // Map karyawan ke kode: empRows[ni] dikurangi afterRow → index di kodePersonil (0-based dari baris data)
+        // F6:F15 = baris data mulai index afterRow, AM6:AM15 = kodePersonil[0..9]
+        // empRows[ni] adalah index di namaGrid (F1:F20), afterRow juga index di namaGrid
+        // Jadi kode karyawan ke-ni = kodePersonil[empRows[ni] - afterRow]
+        const getKode = (ni) => kodePersonil[empRows[ni] - afterRow] || '';
+
+        // Kelompokkan per minggu
+        const minggu = []; let cur = [];
+        hariList.forEach(h => {
+          if (h.hari==='SEN' && cur.length) { minggu.push(cur); cur=[]; }
+          cur.push(h);
+        });
+        if (cur.length) minggu.push(cur);
+
+        // ── Colgroup: set lebar kolom eksplisit ──
+        const colgroup = document.createElement('colgroup');
+        const colNama = document.createElement('col');
+        colNama.className = 'col-jadwal-nama';
+        colgroup.appendChild(colNama);
+        hariList.forEach(() => {
+          const col = document.createElement('col');
+          col.className = 'col-jadwal-shift';
+          colgroup.appendChild(col);
+        });
+        const tabelJadwal = document.getElementById('tabel-jadwal');
+        const existingCg = tabelJadwal.querySelector('colgroup');
+        if (existingCg) existingCg.remove();
+        tabelJadwal.insertBefore(colgroup, tabelJadwal.firstChild);
+
+        // ── Header: baris 1 = NAMA(rowspan2) + MINGGU; baris 2 = HARI/TGL ──
+        // Hitung index kolom terakhir tiap minggu (untuk border tebal)
+        const lastColOfMinggu = new Set();
+        let colCounter = 0;
+        minggu.forEach(w => { colCounter += w.length; lastColOfMinggu.add(colCounter - 1); });
+
+        let trM = '<tr><th class="th-nama" rowspan="2">NAMA</th>';
+        minggu.forEach((w, wi) => {
+          const isLast = wi === minggu.length - 1;
+          trM += `<th colspan="${w.length}" class="th-minggu${isLast ? '' : ' th-minggu-last'}">MINGGU ${wi+1}</th>`;
+        });
+        trM += '</tr>';
+        let trH = '<tr>';
+        hariList.forEach((h, hi) => {
+          const isSabMin = (h.hari==='SAB'||h.hari==='MIN');
+          const isLast   = lastColOfMinggu.has(hi) && hi < hariList.length - 1;
+          const cls = [isSabMin?'th-sabmin':'', isLast?'th-hari-last':''].filter(Boolean).join(' ');
+          trH += `<th class="${cls}">${h.hari}<br><span style="font-size:.8em;opacity:.8;">${h.tgl}</span></th>`;
+        });
+        trH += '</tr>';
+        document.getElementById('jadwal-thead').innerHTML = trM + trH;
+
+        // ── Tbody: setiap baris mulai dengan td NAMA sticky, diwarnai berdasarkan kode ──
+        let tbodyHtml = '';
+        namaList.forEach((nama, ni) => {
+          const shifts  = shiftGrid[empRows[ni]] || [];
+          const kode    = getKode(ni);
+          const clr     = kodeColor(kode);
+          const rowBg   = clr.bg;
+
+          tbodyHtml += `<tr>`;
+          tbodyHtml += `<td class="td-nama" title="${nama}" style="background:${rowBg};color:${clr.text};">${nama}</td>`;
+          hariList.forEach((h, hi) => {
+            const val      = (shifts[h.colIdx]||'').toString().trim();
+            const isSabMin = (h.hari==='SAB'||h.hari==='MIN');
+            const isLast   = lastColOfMinggu.has(hi) && hi < hariList.length - 1;
+            const lastCls  = isLast ? ' td-col-last' : '';
+            if (isSabMin) {
+              tbodyHtml += `<td class="shift-sabmin${lastCls}">${val||'–'}</td>`;
+            } else if (val === '') {
+              tbodyHtml += `<td class="shift-libur${lastCls}" style="background:${rowBg};"></td>`;
+            } else {
+              const badgeStyle = `background:${clr.btnBg};color:${clr.text};border:1px solid ${clr.shadow};box-shadow:0 2px 0 ${clr.shadow};border-radius:4px;padding:1px 4px;font-weight:900;display:inline-block;min-width:1.6em;line-height:1.4;font-size:.9em;`;
+              tbodyHtml += `<td class="${lastCls.trim()}" style="background:${rowBg};"><span style="${badgeStyle}">${val}</span></td>`;
+            }
+          });
+          tbodyHtml += `</tr>`;
+        });
+        document.getElementById('tbody-jadwal').innerHTML = tbodyHtml;
+
+        document.getElementById('jadwal-table-wrapper').classList.add('visible');
+        document.getElementById('info-jadwal').textContent =
+          `${namaSheet} — ${namaList.length} karyawan, ${hariList.length} hari`;
+        fitJadwalTable();
+      } catch(err) {
+        document.getElementById('info-jadwal').textContent = '❌ ' + err.message;
+        showToast('❌ Gagal: ' + err.message, 'err', 8000);
+      } finally {
+        hideLoading(); btn.disabled=false; btn.textContent='LOAD';
+      }
+    }
+
+    function fitJadwalTable() {
+      requestAnimationFrame(() => {
+        const wrapper = document.getElementById('jadwal-table-wrapper');
+        const tabel   = document.getElementById('tabel-jadwal');
+        const thead   = tabel.querySelector('thead');
+        const rows    = tabel.querySelectorAll('tbody tr');
+        if (!rows.length || !wrapper.classList.contains('visible')) return;
+
+        // Biarkan layout selesai dulu, lalu ukur
+        requestAnimationFrame(() => {
+          const wrapH  = wrapper.clientHeight;
+          const headH  = thead ? thead.offsetHeight : 0;
+          const dataH  = wrapH - headH;
+          const rowH   = Math.max(16, Math.floor(dataH / rows.length));
+          const fs     = Math.min(12, Math.max(8, Math.floor(rowH * 0.58)));
+
+          rows.forEach(tr => { tr.style.height = rowH + 'px'; });
+          tabel.style.fontSize = fs + 'px';
+        });
+      });
+    }
+
   </script>
+  <!-- ── MODAL GENERATE JADWAL (2-STEP) ── -->
+  <div id="generate-overlay">
+    <div id="generate-modal">
+      <div id="generate-modal-header">
+        <span id="gen-header-title">＋ BUAT JADWAL BARU</span>
+        <button id="btn-gen-close" onclick="closeGenerateModal()">✕</button>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="gen-steps">
+        <div class="gen-step-dot active" id="gsd-1">1</div>
+        <div class="gen-step-line" id="gsl-1"></div>
+        <div class="gen-step-dot" id="gsd-2">2</div>
+      </div>
+      <div class="gen-step-labels">
+        <span class="gen-step-label active" id="gsl-label-1">PILIH</span>
+        <span class="gen-step-label" id="gsl-label-2">PERSONIL</span>
+      </div>
+
+      <!-- PANEL 1: Pilih Bulan & Tahun -->
+      <div id="gen-panel-1">
+        <div class="gen-fields-row">
+          <div class="gen-field">
+            <label>BULAN</label>
+            <select id="gen-bulan">
+              <option value="1">JANUARI</option>
+              <option value="2">FEBRUARI</option>
+              <option value="3">MARET</option>
+              <option value="4">APRIL</option>
+              <option value="5">MEI</option>
+              <option value="6">JUNI</option>
+              <option value="7">JULI</option>
+              <option value="8">AGUSTUS</option>
+              <option value="9">SEPTEMBER</option>
+              <option value="10">OKTOBER</option>
+              <option value="11">NOVEMBER</option>
+              <option value="12">DESEMBER</option>
+            </select>
+          </div>
+          <div class="gen-field">
+            <label>TAHUN</label>
+            <input type="number" id="gen-tahun" min="2024" max="2099" value="2026">
+          </div>
+        </div>
+        <div class="gen-status" id="gen-status-1"></div>
+        <button id="btn-gen-step1" class="btn-3d" onclick="doGenStep1()">GENERATE SHEET →</button>
+      </div>
+
+      <!-- PANEL 2: Atur Personil -->
+      <div id="gen-panel-2">
+        <div id="gen-personil-title"></div>
+        <div id="gen-tabel-wrap">
+          <table id="gen-tabel-personil">
+            <colgroup>
+              <col class="gcol-no">
+              <col class="gcol-nama">
+              <col class="gcol-kode">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>NO</th>
+                <th>NAMA</th>
+                <th>KODE</th>
+              </tr>
+            </thead>
+            <tbody id="gen-tbody-personil"></tbody>
+          </table>
+        </div>
+        <div class="gen-status" id="gen-status-2"></div>
+        <button id="btn-gen-simpan" class="btn-3d" onclick="doGenSimpan()">💾 SIMPAN KODE PERSONIL</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── MODAL KODE PICKER (dipakai oleh seting & gen step-2) ── -->
+  <div id="kode-picker-overlay">
+    <div id="kode-picker-box">
+      <div id="kode-picker-header">
+        <span id="kode-picker-header-title">PILIH KODE PERSONIL</span>
+        <button id="btn-picker-close" onclick="closeKodePicker()">✕</button>
+      </div>
+      <div id="kode-picker-nama"></div>
+      <div id="kode-picker-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── MODAL SHIFT PICKER (edit shift di tabel pola) ── -->
+  <div id="shift-picker-overlay">
+    <div id="shift-picker-box">
+      <div id="shift-picker-header">
+        <span>PILIH NILAI SHIFT</span>
+        <button id="btn-shift-picker-close" onclick="closeShiftPicker()">✕</button>
+      </div>
+      <div id="shift-picker-label"></div>
+      <div id="shift-picker-grid">
+        <button class="shift-pick-btn pick-p"      onclick="shiftPickerSelect('P')">P</button>
+        <button class="shift-pick-btn pick-sm"     onclick="shiftPickerSelect('SM')">SM</button>
+        <button class="shift-pick-btn pick-off"    onclick="shiftPickerSelect('OFF')">OFF</button>
+        <button class="shift-pick-btn pick-kosong" onclick="shiftPickerSelect('')">✕ Kosongkan</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-blocker">
+    <div class="loading-box">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">MEMUAT...</div>
+    </div>
+  </div>
+  <!-- ── MODAL PIN ── -->
+  <div id="pin-overlay">
+    <div id="pin-modal">
+      <div id="pin-modal-header">
+        MASUKKAN PIN
+        <button id="btn-pin-close" onclick="closePinModal()">✕</button>
+      </div>
+      <div id="pin-modal-body">
+        <div id="pin-display">
+          <div class="pin-dot" id="dot-0"></div>
+          <div class="pin-dot" id="dot-1"></div>
+          <div class="pin-dot" id="dot-2"></div>
+          <div class="pin-dot" id="dot-3"></div>
+          <div class="pin-dot" id="dot-4"></div>
+          <div class="pin-dot" id="dot-5"></div>
+        </div>
+        <div id="pin-status"></div>
+        <div id="pin-grid">
+          <button class="pin-btn" onclick="pinInput('1')">1</button>
+          <button class="pin-btn" onclick="pinInput('2')">2</button>
+          <button class="pin-btn" onclick="pinInput('3')">3</button>
+          <button class="pin-btn" onclick="pinInput('4')">4</button>
+          <button class="pin-btn" onclick="pinInput('5')">5</button>
+          <button class="pin-btn" onclick="pinInput('6')">6</button>
+          <button class="pin-btn" onclick="pinInput('7')">7</button>
+          <button class="pin-btn" onclick="pinInput('8')">8</button>
+          <button class="pin-btn" onclick="pinInput('9')">9</button>
+          <button class="pin-btn empty"></button>
+          <button class="pin-btn" onclick="pinInput('0')">0</button>
+          <button class="pin-btn del" onclick="pinDelete()">⌫</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ══════════════════════════════════════════════════════
+    // ── EDIT SHIFT POLA (mode admin) ──
+    // ══════════════════════════════════════════════════════
+    let _shiftPickerTarget = null; // div .shift-cell-edit yang sedang diedit
+
+    function openShiftPicker(el, kode, hIdx, hNama) {
+      if (!_isAdmin) return;
+      _shiftPickerTarget = el;
+      document.getElementById('shift-picker-label').textContent =
+        `Kode ${kode} — Hari ${hNama}`;
+      document.getElementById('shift-picker-overlay').classList.add('show');
+    }
+
+    function closeShiftPicker() {
+      document.getElementById('shift-picker-overlay').classList.remove('show');
+      _shiftPickerTarget = null;
+    }
+
+    function shiftPickerSelect(val) {
+      if (!_shiftPickerTarget) { closeShiftPicker(); return; }
+      const el = _shiftPickerTarget;
+      // Update tampilan
+      el.dataset.val = val;
+      el.textContent = val || '–';
+      // Reset class val-*
+      el.className = el.className.replace(/\bval-\S+/g, '').trim();
+      const vCls = val==='P' ? 'val-p' : val==='SM' ? 'val-sm' : val==='OFF' ? 'val-off' : 'val-kosong';
+      el.classList.add(vCls);
+      // Tambah kembali ::after via class (arrow indicator)
+      closeShiftPicker();
+    }
+
+    async function doPolaSimpan() {
+      // Kumpulkan semua data dari sel editable
+      // Sheet POLA SHIFT, range F2:J12 (5 kolom hari, 10 baris kode)
+      // Baris header (baris 1 sheet, indeks 0 tbody) dilewati
+      const tbody = document.getElementById('tbody-pola');
+      const rows  = tbody.querySelectorAll('tr');
+      if (!rows.length) return;
+
+      // Build values: array of rows, tiap row = [SEN, SEL, RAB, KAM, JUM]
+      const values = [];
+      rows.forEach(tr => {
+        const cells = tr.querySelectorAll('[data-hari]');
+        if (!cells.length) return; // baris tanpa data hari (misal header)
+        const rowVals = [0,1,2,3,4].map(h => {
+          const cell = tr.querySelector(`[data-hari="${h}"]`);
+          if (!cell) return '';
+          const badge = cell.querySelector('.shift-cell-edit');
+          return badge ? (badge.dataset.val || '') : '';
+        });
+        values.push(rowVals);
+      });
+
+      if (!values.length) return;
+
+      const btn    = document.getElementById('btn-pola-simpan');
+      const status = document.getElementById('pola-save-status');
+      btn.disabled = true;
+      btn.textContent = '⏳ Menyimpan...';
+      status.textContent = '';
+
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', redirect: 'follow',
+          body: JSON.stringify({
+            action: 'write',
+            sheet:  'POLA SHIFT',
+            range:  'F2:J' + (1 + values.length),
+            values: values
+          })
+        });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+        status.style.color = '#16a34a';
+        status.textContent = '✅ Tersimpan!';
+        btn.textContent = '💾 SIMPAN SHIFT';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+        // Reload agar data sinkron + paksa rebuild dengan admin mode
+        await loadPola();
+      } catch(err) {
+        status.style.color = '#dc2626';
+        status.textContent = '❌ ' + err.message;
+        btn.textContent = '💾 SIMPAN SHIFT';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ── PIN MODAL ──
+    let _pinValue = '';
+    let _pinBenar = null;
+    let _isAdmin  = false;
+
+    function toggleAdmin() {
+      if (_isAdmin) {
+        _isAdmin = false;
+        const btn = document.getElementById('btn-edit-header');
+        btn.textContent = '🔒 ADMIN';
+        btn.classList.remove('admin-on');
+        // Kembalikan badge edit → badge biasa (tab seting)
+        if (document.getElementById('tabel-wrapper').classList.contains('visible')) {
+          _deactivateAdminBadges();
+          document.getElementById('seting-save-bar').classList.remove('visible');
+        }
+        // Sembunyikan pola save bar & reload pola jika sedang di tab pola
+        document.getElementById('pola-save-bar').classList.remove('visible');
+        if (document.getElementById('pola').classList.contains('active')) {
+          loadPola();
+        } else if (document.getElementById('pola-wrapper').classList.contains('visible')) {
+          fitPolaTable();
+        }
+      } else {
+        loadPinThenOpen();
+      }
+    }
+
+    async function loadPinThenOpen() {
+      const btn = document.getElementById('btn-edit-header');
+      btn.disabled = true;
+      btn.textContent = '⏳...';
+      showLoading('MEMUAT DATA...');
+
+      try {
+        const url = `${APPS_SCRIPT_URL}?action=read&sheet=${encodeURIComponent('POLA SHIFT')}&range=L3`;
+        const res  = await fetch(url, { redirect: 'follow' });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message);
+        _pinBenar = (json.data?.[0]?.[0] || '').toString().trim();
+        _pinValue = '';
+        updatePinDisplay();
+        document.getElementById('pin-status').textContent = '';
+        document.getElementById('pin-overlay').classList.add('show');
+      } catch (err) {
+        showToast('❌ Gagal memuat PIN: ' + err.message, 'err', 4000);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔒 ADMIN';
+        hideLoading();
+      }
+    }
+
+    function openPinModal() {
+      _pinValue = '';
+      _pinBenar = null;
+      updatePinDisplay();
+      document.getElementById('pin-status').textContent = '';
+      document.getElementById('pin-overlay').classList.add('show');
+    }
+
+    function closePinModal() {
+      document.getElementById('pin-overlay').classList.remove('show');
+      _pinValue = '';
+      updatePinDisplay();
+      document.getElementById('pin-status').textContent = '';
+    }
+
+    function pinInput(digit) {
+      if (_pinValue.length >= 6) return;
+      _pinValue += digit;
+      updatePinDisplay();
+      if (_pinValue.length === 6) {
+        setTimeout(checkPin, 150);
+      }
+    }
+
+    function pinDelete() {
+      _pinValue = _pinValue.slice(0, -1);
+      updatePinDisplay();
+      document.getElementById('pin-status').textContent = '';
+    }
+
+    function updatePinDisplay() {
+      for (let i = 0; i < 6; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.classList.toggle('filled', i < _pinValue.length);
+      }
+    }
+
+    function checkPin() {
+      if (_pinBenar === null) {
+        document.getElementById('pin-status').style.color = '#dc2626';
+        document.getElementById('pin-status').textContent = '❌ PIN belum termuat';
+        _pinValue = '';
+        setTimeout(() => updatePinDisplay(), 500);
+        return;
+      }
+      if (_pinValue === _pinBenar) {
+        document.getElementById('pin-status').style.color = '#16a34a';
+        document.getElementById('pin-status').textContent = '✅ PIN benar!';
+        _isAdmin = true;
+        const btn = document.getElementById('btn-edit-header');
+        btn.textContent = '🔓 LOGOUT';
+        btn.classList.add('admin-on');
+        setTimeout(() => {
+          closePinModal();
+          // Tab seting: aktifkan badge edit
+          if (document.getElementById('tabel-wrapper').classList.contains('visible')) {
+            _activateAdminBadges();
+          }
+          // Tab pola: reload agar cell shift jadi editable
+          if (document.getElementById('pola').classList.contains('active')) {
+            loadPola();
+          }
+        }, 800);
+      } else {
+        document.getElementById('pin-status').style.color = '#dc2626';
+        document.getElementById('pin-status').textContent = '❌ PIN salah, coba lagi';
+        _pinValue = '';
+        setTimeout(() => {
+          updatePinDisplay();
+        }, 500);
+      }
+    }
+  </script>
+    
 </body>
 </html>
